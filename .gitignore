@@ -1,0 +1,9 @@
+# データ実体はコミットしない（レポートJSONは reports/ にコミットする）
+data/
+
+# 有償データ（再配布禁止）は念のため明示
+data/private/
+
+*.log
+__pycache__/
+.venv/
