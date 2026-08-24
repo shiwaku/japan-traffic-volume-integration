@@ -4,7 +4,36 @@
 「交通量データ（国土交通省）」（直轄国道・JARTIC 交通量API）を統合し、
 共通スキーマの観測点マスタ＋交通量時系列データセットを作成するプロジェクト。
 
-**現在は設計フェーズ。** 設計の全容は [DESIGN.md](DESIGN.md) を参照。
+設計の全容は [DESIGN.md](DESIGN.md) を参照。
+Phase 1（札幌方面・2026年6月分）のパイプラインが動作済み。検証結果は [reports/](reports/) を参照。
+
+## 使い方
+
+```bash
+pip install -r requirements.txt
+
+# 全ステップ実行（例: 札幌方面・2026年6月）
+python run.py --step all --regions sapporo --month 2026-06
+
+# 個別ステップ
+python run.py --step fetch-police,parse-police --regions sapporo --month 2026-06
+python run.py --step fetch-mlit,ingest-mlit    --regions sapporo --month 2026-06
+python run.py --step stations,unify,export,verify --regions sapporo --month 2026-06
+```
+
+| ステップ | 処理 |
+|---|---|
+| fetch-police | JARTICカタログ（opendata.json）からtypeB月次ZIPを取得 |
+| parse-police | SJIS CSV → counts / stations Parquet（DuckDB） |
+| fetch-mlit | 交通量APIから1時間値（様式2/4）を地域BBOX・日別に取得 |
+| ingest-mlit | 取得CSV → counts / stations Parquet（方向×車種のlong format） |
+| stations | 統合観測点マスタ生成。`data/private/tmt/*.csv` があれば警察地点に座標結合 |
+| unify | counts統合＋断面1時間合計へ正規化（counts_unified_1h） |
+| export | 座標を持つ観測点の GeoJSON 出力（PMTilesはtippecanoe導入後） |
+| verify | 検証レポートJSONを `reports/` に出力（コミット対象） |
+
+成果物は `data/output/{YYYYMM}/`（counts.parquet / counts_unified_1h.parquet /
+stations.parquet / stations.geojson）。
 
 ## データソース
 

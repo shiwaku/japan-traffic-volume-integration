@@ -1,0 +1,23 @@
+paths:
+  data_dir: data
+  reports_dir: reports
+  # 国交省側のローカル蓄積（japan-jartic-traffic-data）。存在すれば ingest-mlit で利用可能
+  mlit_local_dir: ../japan-jartic-traffic-data/data
+
+catalog_url: https://www.jartic.or.jp/d/opendata/opendata.json
+police_download_base: https://www.jartic.or.jp/d/opendata
+
+api:
+  endpoint: https://api.jartic-open-traffic.org/geoserver
+  road_type: "3"
+  max_workers: 4
+  retries: 3
+  retry_delay_sec: 10
+  # 取得対象の1時間値レイヤ（5分値は保持期間1ヶ月のため月次バッチでは原則取れない）
+  layers_1h:
+    tracan: t_travospublic_measure_1h
+    cctv: t_travospublic_measure_1h_img
+
+police:
+  # 中間UTF-8 CSV（約1.1GB/地域月）をparquet生成後に削除するか
+  delete_utf8_temp: true

@@ -1,0 +1,11 @@
+# typeB地域（都道府県警察・方面本部）の定義
+# joho_gen_codes: この地域のtypeB CSVに現れる情報源コード
+# mlit_bbox: 国交省データ抽出用BBOX (min_lon, min_lat, max_lon, max_lat)
+regions:
+  sapporo:
+    roman: sapporo
+    label: 北海道警（札幌方面）
+    joho_gen_codes: ["3001"]
+    pref: 北海道
+    pref_code: "01"
+    mlit_bbox: [139.3, 41.3, 146.0, 45.7]  # 北海道全域
