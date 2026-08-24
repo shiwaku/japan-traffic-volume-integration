@@ -8,8 +8,11 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
-from integrator.config import load_config
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+
+from config import load_config  # noqa: E402
 
 STEPS = [
     "fetch-police",
@@ -41,31 +44,31 @@ def main() -> None:
     for step in steps:
         print(f"\n===== {step} ({args.month}, regions={regions}) =====")
         if step == "fetch-police":
-            from integrator.fetch_police import fetch_police
+            from fetch_police import fetch_police
             for r in regions:
                 fetch_police(cfg, r, yyyymm)
         elif step == "parse-police":
-            from integrator.parse_police import parse_police
+            from parse_police import parse_police
             for r in regions:
                 parse_police(cfg, r, yyyymm)
         elif step == "fetch-mlit":
-            from integrator.fetch_mlit import fetch_mlit
+            from fetch_mlit import fetch_mlit
             for r in regions:
                 fetch_mlit(cfg, r, yyyymm)
         elif step == "ingest-mlit":
-            from integrator.ingest_mlit import ingest_mlit
+            from ingest_mlit import ingest_mlit
             ingest_mlit(cfg, yyyymm)
         elif step == "stations":
-            from integrator.stations import build_stations
+            from stations import build_stations
             build_stations(cfg, regions, yyyymm)
         elif step == "unify":
-            from integrator.unify import unify
+            from unify import unify
             unify(cfg, regions, yyyymm)
         elif step == "export":
-            from integrator.export import export
+            from export import export
             export(cfg, yyyymm)
         elif step == "verify":
-            from integrator.verify import verify
+            from verify import verify
             verify(cfg, regions, yyyymm)
 
 

@@ -195,16 +195,17 @@ japan-traffic-volume-integration/
 ├── configs/
 │   ├── regions.yaml        # 対象地域（typeB地域ローマ字⇔情報源コード⇔都道府県）
 │   └── pipeline.yaml       # パス・期間・並列数
-├── integrator/
+├── src/
+│   ├── config.py           # 設定ロードとパス解決
 │   ├── catalog.py          # opendata.json の取得・差分検知
 │   ├── fetch_police.py     # typeB zip 取得（レジューム対応）
 │   ├── parse_police.py     # SJIS CSV → counts parquet + 地点抽出
-│   ├── ingest_mlit.py      # japan-jartic-traffic-data の CSV → counts parquet
+│   ├── fetch_mlit.py       # 交通量API 1時間値の地域BBOX・日別取得
+│   ├── ingest_mlit.py      # 取得CSV → counts parquet（方向×車種 long format）
 │   ├── stations.py         # 観測点マスタ生成・TMT座標結合・近接ペア検出
 │   ├── unify.py            # counts_unified 生成（DuckDB）
 │   ├── export.py           # GeoParquet / PMTiles / 時刻別JSON
 │   └── verify.py           # 結合率・欠測率・ペア相関レポート（reports/ にJSONコミット）
-├── scripts/                # 薄いラッパー（単体実行用）
 ├── data/                   # .gitignore 対象
 │   ├── police/{region}/{YYYYMM}/   # raw zip + parquet
 │   ├── mlit/                        # japan-jartic-traffic-data からのシンボリックリンク or コピー

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import requests
 
-from .config import Config
+from config import Config
 
 
 def fetch_catalog(cfg: Config) -> list[dict]:

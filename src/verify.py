@@ -11,7 +11,7 @@ from pathlib import Path
 
 import duckdb
 
-from .config import Config, ensure_dir
+from config import Config, ensure_dir
 
 JST = timezone(timedelta(hours=9))
 

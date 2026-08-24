@@ -5,8 +5,8 @@ from pathlib import Path
 
 import requests
 
-from .catalog import resolve_typeb_url
-from .config import Config, ensure_dir
+from catalog import resolve_typeb_url
+from config import Config, ensure_dir
 
 
 def fetch_police(cfg: Config, region: str, yyyymm: str) -> Path:

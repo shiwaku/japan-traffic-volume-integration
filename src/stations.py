@@ -5,7 +5,7 @@ from pathlib import Path
 
 import duckdb
 
-from .config import Config, ensure_dir
+from config import Config, ensure_dir
 
 
 def _q(p: Path) -> str:

@@ -17,7 +17,7 @@ from pathlib import Path
 
 import requests
 
-from .config import Config, ensure_dir
+from config import Config, ensure_dir
 
 MULTIPOINT_RE = re.compile(r"MULTIPOINT\s*\(\(\s*([0-9.]+)\s+([0-9.]+)\s*\)\)")
 

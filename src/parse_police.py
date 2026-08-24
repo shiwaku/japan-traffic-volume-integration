@@ -11,7 +11,7 @@ from pathlib import Path
 
 import duckdb
 
-from .config import Config
+from config import Config
 
 CHUNK = 1 << 22  # 4MB
 

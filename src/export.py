@@ -10,7 +10,7 @@ from pathlib import Path
 
 import duckdb
 
-from .config import Config
+from config import Config
 
 
 def export(cfg: Config, yyyymm: str) -> None:

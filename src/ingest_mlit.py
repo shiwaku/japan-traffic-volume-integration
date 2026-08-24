@@ -11,7 +11,7 @@ from pathlib import Path
 
 import duckdb
 
-from .config import Config
+from config import Config
 
 DIRS = {"上り": "up", "下り": "down"}
 
