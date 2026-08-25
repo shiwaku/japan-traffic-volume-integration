@@ -9,44 +9,62 @@
   <body>
     <div id="map"></div>
 
-    <header id="header">
-      <h1>統合交通量ビューワ<span id="subtitle"></span></h1>
-      <button id="theme-btn" type="button" title="テーマ切替">🌙</button>
-    </header>
+    <!-- タイトルとコントロールは1枚のパネルにまとめる -->
+    <section id="panel" class="panel" aria-label="コントロールパネル">
+      <header class="panel-head">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">🚗</span>
+          <h1>統合交通量ビューワ<span id="subtitle" class="brand-sub">読み込み中…</span></h1>
+        </div>
+        <div class="head-actions">
+          <button id="theme-btn" class="icon-btn" type="button" title="テーマ切替" aria-label="テーマ切替"></button>
+          <button id="collapse-btn" class="icon-btn" type="button" title="パネル開閉" aria-label="パネル開閉"></button>
+        </div>
+      </header>
 
-    <section id="panel">
-      <button id="collapse-btn" type="button" title="パネル開閉">▴</button>
-
-      <div class="panel-body">
-        <div class="group">
-          <div class="group-title">機器</div>
+      <div id="panel-body" class="panel-body">
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">機器</span>
+          </div>
           <div id="sources"></div>
         </div>
 
-        <div class="group">
-          <div class="group-title">品質</div>
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">品質</span>
+          </div>
           <label class="chk">
             <input type="checkbox" id="hide-zero" />
             <span>常時ゼロ地点を隠す<em id="zero-count"></em></span>
           </label>
         </div>
 
-        <div class="group">
-          <div class="group-title">凡例</div>
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">凡例</span>
+          </div>
           <div id="legend"></div>
         </div>
 
-        <div class="group">
-          <button id="fit-cordon" type="button" class="btn">札幌都心へ</button>
-          <button id="fit-all" type="button" class="btn">全体表示</button>
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">表示範囲</span>
+            <div class="field-actions">
+              <button id="fit-cordon" class="mini-btn" type="button" title="シミュレーション対象区域">札幌都心</button>
+              <button id="fit-all" class="mini-btn" type="button" title="北海道全域">全体</button>
+            </div>
+          </div>
+          <div id="stats" class="stats"></div>
         </div>
 
-        <div class="group meta">
-          <div id="stats"></div>
-          <div id="attribution"></div>
-          <div id="build-ver"></div>
-        </div>
+        <p class="hint">観測点をクリックすると値と日変動が出ます。</p>
       </div>
+
+      <footer class="panel-foot">
+        <div id="attribution"></div>
+        <span id="build-ver" class="build-ver"></span>
+      </footer>
     </section>
 
     <footer id="timebar">

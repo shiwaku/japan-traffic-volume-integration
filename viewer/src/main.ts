@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl'
+import { Protocol } from 'pmtiles'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import { getBasemapStyle, type Basemap } from './basemap'
@@ -43,6 +44,10 @@ const [meta, stationsGeoJSON] = await Promise.all([loadMeta(), loadStations()]).
     throw e
   },
 )
+
+// 背景地図（地理院の最適化ベクトルタイル）は pmtiles:// で配信されているため、
+// 地図を作る前にプロトコルを登録する。これが無いと背景が真っ白になる。
+maplibregl.addProtocol('pmtiles', new Protocol().tile)
 
 // ---- 表示状態 --------------------------------------------------------------
 
@@ -268,6 +273,7 @@ const panel = $('panel')
 const collapseBtn = $<HTMLButtonElement>('collapse-btn')
 const renderCollapseBtn = (): void => {
   collapseBtn.textContent = panel.classList.contains('collapsed') ? '▾' : '▴'
+  collapseBtn.title = panel.classList.contains('collapsed') ? 'パネルを開く' : 'パネルを閉じる'
 }
 collapseBtn.addEventListener('click', () => {
   panel.classList.toggle('collapsed')
