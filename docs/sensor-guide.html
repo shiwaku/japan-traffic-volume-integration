@@ -1,0 +1,627 @@
+<title>交通量計測機器の見分け方</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  /* 道路図面から色を取る。機器の3色は本プロジェクトのビューワ・動画と同一にして、
+     資料と画面で同じ色が同じ機器を指すようにしている。 */
+  :root {
+    --ground: #f2f3f5;
+    --surface: #ffffff;
+    --surface-2: #e9ebef;
+    --asphalt: #cdd2d9;
+    --ink: #1a1d22;
+    --ink-2: #4e545e;
+    --ink-3: #7b828d;
+    --rule: #d3d8de;
+    --police: #b8860b;
+    --police-fill: #ffd166;
+    --tracan: #0e7490;
+    --tracan-fill: #4cc9f0;
+    --cctv: #047857;
+    --cctv-fill: #06d6a0;
+    --warn: #b45309;
+    --road: #b9bfc7;
+    --road-line: #ffffff;
+    --shadow: 0 1px 2px rgba(20, 24, 30, .06), 0 8px 24px rgba(20, 24, 30, .05);
+  }
+
+  /* OS がダークで、明示的な light 指定がないときだけ上書きする */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #13151a;
+      --surface: #1b1e24;
+      --surface-2: #23272b;
+      --asphalt: #31363e;
+      --ink: #e9ecf1;
+      --ink-2: #a9b1bd;
+      --ink-3: #7d858f;
+      --rule: #2e333b;
+      --police: #ffd166;
+      --police-fill: #ffd166;
+      --tracan: #4cc9f0;
+      --tracan-fill: #4cc9f0;
+      --cctv: #06d6a0;
+      --cctv-fill: #06d6a0;
+      --warn: #fbbf24;
+      --road: #2a2f36;
+      --road-line: #6b7280;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px rgba(0, 0, 0, .3);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #13151a;
+    --surface: #1b1e24;
+    --surface-2: #23272b;
+    --asphalt: #31363e;
+    --ink: #e9ecf1;
+    --ink-2: #a9b1bd;
+    --ink-3: #7d858f;
+    --rule: #2e333b;
+    --police: #ffd166;
+    --police-fill: #ffd166;
+    --tracan: #4cc9f0;
+    --tracan-fill: #4cc9f0;
+    --cctv: #06d6a0;
+    --cctv-fill: #06d6a0;
+    --warn: #fbbf24;
+    --road: #2a2f36;
+    --road-line: #6b7280;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px rgba(0, 0, 0, .3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  /* ---- ヘッダー ---- */
+  header { display: flex; flex-direction: column; gap: 14px; }
+
+  .eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    color: var(--ink-3);
+    font-family: 'Roboto Mono', monospace;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 44px);
+    font-weight: 900;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 16px;
+    color: var(--ink-2);
+  }
+
+  /* ---- セクション ---- */
+  section { display: flex; flex-direction: column; gap: 20px; }
+
+  h2 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    color: var(--ink-3);
+    font-family: 'Roboto Mono', monospace;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h3 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+
+  /* ---- 機器カード ---- */
+  .devices { display: flex; flex-direction: column; gap: 22px; }
+
+  .device {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .device-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    padding: 18px 22px 14px;
+  }
+
+  .owner {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    font-family: 'Roboto Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1.5px solid;
+  }
+  .d-police .owner { color: var(--police); border-color: var(--police); }
+  .d-tracan .owner { color: var(--tracan); border-color: var(--tracan); }
+  .d-cctv .owner { color: var(--cctv); border-color: var(--cctv); }
+
+  .device-head .sub { font-size: 13px; color: var(--ink-3); }
+
+  .figure { padding: 4px 12px 0; overflow-x: auto; }
+  .figure svg { display: block; width: 100%; min-width: 620px; height: auto; }
+
+  .fig-note {
+    padding: 2px 22px 16px;
+    font-size: 12px;
+    color: var(--ink-3);
+    font-family: 'Roboto Mono', monospace;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border-top: 1px solid var(--rule);
+  }
+
+  .fact { background: var(--surface); padding: 14px 22px 16px; }
+  .fact dt {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--ink-3);
+    font-family: 'Roboto Mono', monospace;
+    margin-bottom: 3px;
+  }
+  .fact dd { margin: 0; font-size: 13.5px; line-height: 1.6; }
+
+  /* ---- 表 ---- */
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+
+  table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13.5px; }
+  caption { text-align: left; padding: 15px 18px 0; font-size: 13px; color: var(--ink-3); }
+
+  th, td { padding: 12px 16px; text-align: left; vertical-align: top; border-top: 1px solid var(--rule); }
+  thead th { border-top: none; font-size: 11.5px; letter-spacing: .06em; color: var(--ink-3); font-weight: 700; }
+  tbody th { font-weight: 500; color: var(--ink-2); width: 24%; }
+  td.num { font-family: 'Roboto Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  .yes { color: var(--cctv); font-weight: 700; }
+  .no { color: var(--ink-3); }
+
+  .col-p { border-left: 2px solid var(--police-fill); }
+  .col-t { border-left: 2px solid var(--tracan-fill); }
+  .col-c { border-left: 2px solid var(--cctv-fill); }
+
+  /* ---- 見分け方 ---- */
+  .tells { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+  .tell {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .tell h4 { margin: 0; font-size: 14.5px; font-weight: 700; }
+  .tell p { margin: 0; font-size: 13px; color: var(--ink-2); }
+
+  /* ---- 実測値 ---- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat .v {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 26px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em;
+  }
+  .stat .k { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .stat.is-warn .v { color: var(--warn); }
+
+  /* ---- 注記 ---- */
+  .callout {
+    background: var(--surface-2);
+    border-left: 3px solid var(--warn);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    font-size: 13.5px;
+  }
+  .callout strong { font-weight: 700; }
+
+  /* ---- 出典 ---- */
+  .sources { font-size: 12.5px; color: var(--ink-2); }
+  .sources ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 5px; }
+  a { color: var(--tracan); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--tracan); outline-offset: 2px; border-radius: 2px; }
+
+  footer { color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--rule); padding-top: 18px; }
+
+  /* SVG内の共通スタイル */
+  .s-road { fill: var(--road); }
+  .s-line { stroke: var(--road-line); }
+  .s-pole { fill: var(--asphalt); }
+  .s-car { fill: var(--ink-3); opacity: .55; }
+  .s-lbl { font: 500 11px 'Noto Sans JP', sans-serif; fill: var(--ink-2); }
+  .s-lbl-sm { font: 400 10px 'Roboto Mono', monospace; fill: var(--ink-3); }
+  .s-dim { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">TRAFFIC SENSOR FIELD GUIDE</div>
+    <h1>交通量計測機器の見分け方</h1>
+    <p class="lede">
+      オープンデータで交通量が取れる機器は3系統ある。警察の車両感知器、国交省の常設トラカン、
+      同じくCCTVトラカン。設置主体も目的も計測方式も違うため、取れるデータの性質も揃わない。
+      現地での見分け方と、統合するときに効く違いを図で整理した。
+    </p>
+  </header>
+
+  <section>
+    <h2>01 — 設置形態</h2>
+    <div class="devices">
+
+      <!-- 警察 -->
+      <article class="device d-police">
+        <div class="device-head">
+          <span class="owner">都道府県警察</span>
+          <h3>車両感知器</h3>
+          <span class="sub">信号制御・交通管制のために交差点手前へ</span>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 720 220" role="img" aria-label="交差点手前の信号柱から腕木が伸び、車線中央の上空5〜6mに超音波ヘッドが1車線ずつ下向きに付く模式図">
+            <!-- 路面 -->
+            <rect class="s-road" x="0" y="150" width="720" height="70"/>
+            <!-- 車線境界（破線） -->
+            <line class="s-line" x1="0" y1="185" x2="560" y2="185" stroke-width="1.5" stroke-dasharray="14 12"/>
+            <!-- 停止線 -->
+            <rect fill="var(--road-line)" x="560" y="150" width="7" height="70"/>
+            <text class="s-lbl-sm" x="571" y="167">停止線</text>
+
+            <!-- 信号柱 + 腕木 -->
+            <rect class="s-pole" x="676" y="40" width="9" height="112"/>
+            <rect class="s-pole" x="300" y="40" width="380" height="7"/>
+            <!-- 信号灯器 -->
+            <rect fill="var(--ink-2)" x="618" y="20" width="46" height="17" rx="3"/>
+            <circle fill="#e05252" cx="628" cy="28.5" r="5"/>
+            <circle fill="#e0c04a" cx="641" cy="28.5" r="5"/>
+            <circle fill="#4aa96c" cx="654" cy="28.5" r="5"/>
+            <text class="s-lbl" x="600" y="14" text-anchor="middle">信号灯器と同じ支柱</text>
+
+            <!-- 超音波ヘッド（1車線1個） -->
+            <g>
+              <rect fill="var(--police-fill)" stroke="var(--police)" x="404" y="47" width="26" height="15" rx="2.5"/>
+              <rect fill="var(--police-fill)" stroke="var(--police)" x="504" y="47" width="26" height="15" rx="2.5"/>
+              <!-- 感知領域（円錐） -->
+              <path fill="var(--police-fill)" opacity=".16" d="M417 62 L404 150 L430 150 Z"/>
+              <path fill="var(--police-fill)" opacity=".16" d="M517 62 L504 150 L530 150 Z"/>
+            </g>
+            <text class="s-lbl" x="417" y="80" text-anchor="middle">ヘッド</text>
+            <text class="s-lbl-sm" x="417" y="95" text-anchor="middle">1車線に1個</text>
+
+            <!-- 高さ寸法 -->
+            <line class="s-dim" x1="360" y1="47" x2="360" y2="150"/>
+            <text class="s-lbl-sm" x="352" y="102" text-anchor="end">5〜6m</text>
+
+            <!-- 制御器 -->
+            <rect fill="var(--surface-2)" stroke="var(--rule)" x="690" y="96" width="24" height="34" rx="3"/>
+            <text class="s-lbl-sm" x="702" y="145" text-anchor="middle">制御器</text>
+
+            <!-- 車 -->
+            <g class="s-car">
+              <rect x="470" y="158" width="62" height="16" rx="4"/>
+              <rect x="486" y="149" width="32" height="11" rx="3"/>
+            </g>
+            <g class="s-car">
+              <rect x="180" y="192" width="62" height="16" rx="4"/>
+              <rect x="196" y="183" width="32" height="11" rx="3"/>
+            </g>
+          </svg>
+        </div>
+        <p class="fig-note">超音波を路面へ間欠発射し、反射の時間差で車両の存在を検出する（存在型）</p>
+        <dl class="facts">
+          <div class="fact"><dt>設置場所</dt><dd>交差点の流入部。管制センター管轄の都道府県道・市道も含む</dd></div>
+          <div class="fact"><dt>方式</dt><dd>超音波式が最多。ほかにループ式・マイクロ波・光ビーコン・画像式</dd></div>
+          <div class="fact"><dt>取れる値</dt><dd>断面交通量のみ（5分値）。方向・車種の内訳なし</dd></div>
+          <div class="fact"><dt>弱点</dt><dd>車線直上に支柱と腕木が必要。1センサ1車線</dd></div>
+        </dl>
+      </article>
+
+      <!-- 常設トラカン -->
+      <article class="device d-tracan">
+        <div class="device-head">
+          <span class="owner">国土交通省</span>
+          <h3>常設トラフィックカウンター</h3>
+          <span class="sub">道路管理のために単路部の断面へ</span>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 720 220" role="img" aria-label="単路部の門型支柱に超音波ヘッドが付き、路面にはループコイルが埋設されている模式図">
+            <rect class="s-road" x="0" y="150" width="720" height="70"/>
+            <line class="s-line" x1="0" y1="185" x2="720" y2="185" stroke-width="1.5" stroke-dasharray="14 12"/>
+
+            <!-- 門型支柱 -->
+            <rect class="s-pole" x="96" y="36" width="10" height="116"/>
+            <rect class="s-pole" x="614" y="36" width="10" height="116"/>
+            <rect class="s-pole" x="96" y="36" width="528" height="8"/>
+            <text class="s-lbl" x="360" y="26" text-anchor="middle">門型支柱（F型支柱・歩道橋添架も）</text>
+
+            <!-- 超音波ヘッド -->
+            <rect fill="var(--tracan-fill)" stroke="var(--tracan)" x="266" y="44" width="26" height="15" rx="2.5"/>
+            <rect fill="var(--tracan-fill)" stroke="var(--tracan)" x="406" y="44" width="26" height="15" rx="2.5"/>
+            <path fill="var(--tracan-fill)" opacity=".16" d="M279 59 L266 150 L292 150 Z"/>
+            <path fill="var(--tracan-fill)" opacity=".16" d="M419 59 L406 150 L432 150 Z"/>
+            <text class="s-lbl" x="349" y="78" text-anchor="middle">超音波ヘッド</text>
+
+            <!-- ループコイル（路面埋設） -->
+            <g>
+              <rect fill="none" stroke="var(--tracan)" stroke-width="2" x="150" y="196" width="88" height="15" rx="2"/>
+              <rect fill="none" stroke="var(--tracan)" stroke-width="2" x="470" y="196" width="88" height="15" rx="2"/>
+              <line stroke="var(--tracan)" stroke-width="1.5" x1="238" y1="203" x2="300" y2="203"/>
+              <line stroke="var(--tracan)" stroke-width="1.5" x1="558" y1="203" x2="614" y2="203"/>
+            </g>
+            <text class="s-lbl" x="194" y="192" text-anchor="middle">ループコイル（路面に埋設）</text>
+            <text class="s-lbl-sm" x="504" y="192" text-anchor="middle">埋設深さ 5〜10cm</text>
+
+            <!-- 機器箱 -->
+            <rect fill="var(--surface-2)" stroke="var(--rule)" x="632" y="96" width="26" height="36" rx="3"/>
+            <text class="s-lbl-sm" x="645" y="146" text-anchor="middle">機器箱</text>
+
+            <!-- 車 -->
+            <g class="s-car">
+              <rect x="300" y="158" width="62" height="16" rx="4"/>
+              <rect x="316" y="149" width="32" height="11" rx="3"/>
+            </g>
+            <g class="s-car">
+              <rect x="470" y="158" width="80" height="17" rx="3"/>
+              <rect x="470" y="146" width="26" height="13" rx="3"/>
+            </g>
+          </svg>
+        </div>
+        <p class="fig-note">ループコイル式（電磁誘導）と超音波式が混在。地整によってはレーダも使う</p>
+        <dl class="facts">
+          <div class="fact"><dt>設置場所</dt><dd>直轄国道の単路部（交差点間の断面）</dd></div>
+          <div class="fact"><dt>方式</dt><dd>ループコイル・超音波の混在。実データで両方の異常フラグを確認</dd></div>
+          <div class="fact"><dt>取れる値</dt><dd>上り／下り別、小型・大型・判別不能。5分値と1時間値</dd></div>
+          <div class="fact"><dt>弱点</dt><dd>老朽化。北陸地整106基のうち75基が最終更新から11年以上</dd></div>
+        </dl>
+      </article>
+
+      <!-- CCTV -->
+      <article class="device d-cctv">
+        <div class="device-head">
+          <span class="owner">国土交通省</span>
+          <h3>CCTVトラカン</h3>
+          <span class="sub">既設の道路監視カメラをAI解析して転用</span>
+        </div>
+        <div class="figure">
+          <svg viewBox="0 0 720 220" role="img" aria-label="既設CCTVカメラが俯角20〜30度で車道を見下ろし、映像をサーバー側のAIが解析する模式図">
+            <rect class="s-road" x="0" y="150" width="720" height="70"/>
+            <line class="s-line" x1="0" y1="185" x2="720" y2="185" stroke-width="1.5" stroke-dasharray="14 12"/>
+
+            <!-- カメラ柱 -->
+            <rect class="s-pole" x="74" y="30" width="10" height="122"/>
+            <!-- カメラ -->
+            <g>
+              <rect fill="var(--cctv-fill)" stroke="var(--cctv)" x="84" y="30" width="30" height="14" rx="3"/>
+              <path fill="var(--cctv-fill)" stroke="var(--cctv)" d="M114 33 L124 30 L124 44 L114 41 Z"/>
+            </g>
+            <text class="s-lbl" x="128" y="24">既設CCTVカメラ（新規設置なし）</text>
+
+            <!-- 視野（俯角20〜30度） -->
+            <path fill="var(--cctv-fill)" opacity=".14" d="M120 44 L470 150 L120 150 Z"/>
+            <line class="s-dim" x1="120" y1="44" x2="470" y2="150"/>
+            <text class="s-lbl-sm" x="196" y="70">俯角 20〜30°</text>
+
+            <!-- 高さ -->
+            <line class="s-dim" x1="56" y1="37" x2="56" y2="150"/>
+            <text class="s-lbl-sm" x="48" y="98" text-anchor="end">6.5m 以上</text>
+
+            <!-- 車（検知枠つき） -->
+            <g class="s-car">
+              <rect x="222" y="158" width="62" height="16" rx="4"/>
+              <rect x="238" y="149" width="32" height="11" rx="3"/>
+            </g>
+            <rect fill="none" stroke="var(--cctv)" stroke-width="1.5" x="216" y="144" width="74" height="35" rx="2"/>
+            <text class="s-lbl-sm" x="253" y="139" text-anchor="middle">小型</text>
+
+            <g class="s-car">
+              <rect x="330" y="156" width="86" height="19" rx="3"/>
+              <rect x="330" y="143" width="28" height="14" rx="3"/>
+            </g>
+            <rect fill="none" stroke="var(--cctv)" stroke-width="1.5" x="324" y="138" width="98" height="41" rx="2"/>
+            <text class="s-lbl-sm" x="373" y="133" text-anchor="middle">大型</text>
+
+            <!-- 解析サーバー -->
+            <g>
+              <rect fill="var(--surface-2)" stroke="var(--rule)" x="560" y="52" width="112" height="62" rx="6"/>
+              <rect fill="var(--cctv-fill)" opacity=".5" x="572" y="64" width="88" height="6" rx="3"/>
+              <rect fill="var(--cctv-fill)" opacity=".3" x="572" y="76" width="66" height="6" rx="3"/>
+              <rect fill="var(--cctv-fill)" opacity=".3" x="572" y="88" width="78" height="6" rx="3"/>
+              <text class="s-lbl" x="616" y="108" text-anchor="middle">AI解析サーバー</text>
+            </g>
+            <line stroke="var(--cctv)" stroke-width="1.5" stroke-dasharray="4 4" x1="130" y1="37" x2="560" y2="66"/>
+            <text class="s-lbl-sm" x="360" y="46" text-anchor="middle">映像を伝送</text>
+          </svg>
+        </div>
+        <p class="fig-note">道路上に機器を足さず、解析サーバーだけを増設する。外観では判別できない</p>
+        <dl class="facts">
+          <div class="fact"><dt>設置場所</dt><dd>直轄国道の単路部。既設カメラの画角に依存</dd></div>
+          <div class="fact"><dt>方式</dt><dd>AI画像解析。カメラ高さ6.5m以上・俯角20〜30度・4車線以下が条件</dd></div>
+          <div class="fact"><dt>取れる値</dt><dd>方向別、小型・大型（バス／普通貨物まで細分）。歩行者・自転車も</dd></div>
+          <div class="fact"><dt>弱点</dt><dd>夜間・悪天候・画角ズレで欠測。カメラが旋回すると計測不能</dd></div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>02 — 取れるデータの違い</h2>
+    <div class="scroll">
+      <table>
+        <caption>統合時に効くのは、方向・車種・異常フラグの有無</caption>
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th class="col-p">警察 車両感知器</th>
+            <th class="col-t">常設トラカン</th>
+            <th class="col-c">CCTVトラカン</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>方向の区別</th>
+            <td class="col-p no">なし（断面合計のみ）</td>
+            <td class="col-t yes">上り／下り</td>
+            <td class="col-c yes">上り／下り</td>
+          </tr>
+          <tr>
+            <th>車種の区別</th>
+            <td class="col-p no">なし</td>
+            <td class="col-t yes">小型／大型／判別不能</td>
+            <td class="col-c yes">小型／大型（バス・貨物）</td>
+          </tr>
+          <tr>
+            <th>集計単位</th>
+            <td class="col-p num">5分</td>
+            <td class="col-t num">5分・1時間</td>
+            <td class="col-c num">5分・1時間</td>
+          </tr>
+          <tr>
+            <th>異常フラグ</th>
+            <td class="col-p no"><strong>なし</strong></td>
+            <td class="col-t">停電・ループ異常・超音波異常・欠測</td>
+            <td class="col-c">5分欠測処理フラグ ほか</td>
+          </tr>
+          <tr>
+            <th>位置の与え方</th>
+            <td class="col-p">DRMリンク参照<br>（座標なし）</td>
+            <td class="col-t yes">緯度経度</td>
+            <td class="col-c yes">緯度経度</td>
+          </tr>
+          <tr>
+            <th>提供のラグ</th>
+            <td class="col-p">約2ヶ月（月次一括）</td>
+            <td class="col-t">約20分</td>
+            <td class="col-c">約20分</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <strong>単純に合算しないこと。</strong>
+      直轄国道の上では警察と国交省の機器が同一断面に併設されていることがある。
+      両方を足すと二重計上になる。
+    </div>
+  </section>
+
+  <section>
+    <h2>03 — 現地での見分け方</h2>
+    <div class="tells">
+      <div class="tell">
+        <h4>交差点か、単路部か</h4>
+        <p>信号のある交差点の手前にあれば警察。交差点間の断面にあれば国交省。これが最も確実な手がかり。</p>
+      </div>
+      <div class="tell">
+        <h4>同じ支柱に信号灯器があるか</h4>
+        <p>警察の感知器は信号柱やオーバーハングの一部として付く。国交省は門型・F型支柱や歩道橋に付く。</p>
+      </div>
+      <div class="tell">
+        <h4>どの道路にあるか</h4>
+        <p>都道府県道や市道にあれば警察。国交省の観測は直轄国道に限られる。</p>
+      </div>
+      <div class="tell">
+        <h4>ヘッドの形では分からない</h4>
+        <p>下向きの白い小箱という外観は両者で酷似する。機器単体の写真からの判別は困難。</p>
+      </div>
+      <div class="tell">
+        <h4>路面の切削跡</h4>
+        <p>車線内に矩形の細い溝をシール材で埋めた跡があればループコイル式。路肩へリード線の溝が伸びる。</p>
+      </div>
+      <div class="tell">
+        <h4>CCTVは見分けられない</h4>
+        <p>道路上に機器を足さないため、AI計測に使われているカメラと通常の監視カメラは同一の見た目。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>04 — 実データで確かめたこと</h2>
+    <p class="lede">2026年6月・札幌方面と北海道分の実測。文献では未確認だった点が埋まった。</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="v">4,404 / 3,705</div>
+        <div class="k">ループ異常と超音波異常の出現数（5日分）。常設トラカンの<strong>方式混在</strong>を裏付けた</div>
+      </div>
+      <div class="stat is-warn">
+        <div class="v">88 <span style="font-size:15px">地点</span></div>
+        <div class="k">警察側で月間ずっと0だった地点（1,857中4.7%）。異常フラグがないため<strong>故障が0台として紛れ込む</strong></div>
+      </div>
+      <div class="stat">
+        <div class="v">0.967</div>
+        <div class="k">警察×国交省の近接ペア17組の相関中央値。別系統の機器が同一断面で高い一致を示した</div>
+      </div>
+      <div class="stat is-warn">
+        <div class="v">52.3%</div>
+        <div class="k">CCTVの品質OK率（常設トラカンは91.4%）。夜間・悪天候の欠測が効く</div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>キャリブレーションでは常設トラカンを優先する。</strong>
+      CCTVは欠測が半数近くに及ぶため、補正なしで日交通量を出すのは危険。
+      警察データは密度が高い一方、0が本当に0なのか故障なのか判別できない点に注意。
+    </div>
+  </section>
+
+  <section class="sources">
+    <h2>05 — 出典</h2>
+    <ul>
+      <li>設置形態: <a href="https://www.mlit.go.jp/tec/it/denki/gijyutukijyun/R0703kouji.pdf">国交省 電気通信設備工事共通仕様書 令和7年版 5-18-3-1</a>（門型支柱・ループコイル埋設の規定）</li>
+      <li>CCTVの条件: <a href="https://www.mlit.go.jp/tec/it/denki/content/001999658.pdf">画像認識型交通量観測装置 機器仕様書</a>（カメラ高さ・俯角・車線数）</li>
+      <li>運用実績: <a href="https://www.hrr.mlit.go.jp/library/happyoukai/R5/a/a-03.pdf">北陸地方整備局 技術発表 令和5年</a>（老朽化・夜間精度・既設カメラ活用）</li>
+      <li>精度検証: <a href="https://www.mlit.go.jp/road/ir/ir-council/ict/pdf06/02.pdf">国交省 ICT検討会 第6回 資料2</a> / <a href="https://www.mlit.go.jp/road/ir/ir-council/ict/pdf08/02.pdf">第8回 資料2</a></li>
+      <li>警察の感知器: <a href="https://www.tmt.or.jp/research/index5-02-2.html">日本交通管理技術協会 交通情報収集装置</a> / <a href="https://www.utms.or.jp/cont/syusyuu/index2.html">UTMS協会</a></li>
+      <li>データ提供: <a href="https://www.jartic-open-traffic.org/">交通量データの提供（オープンデータ）</a> / <a href="https://www.jartic.or.jp/service/opendata/">JARTIC オープンデータ</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    交通量は参考値であり、正式な調査結果ではない。実測値は2026年6月・札幌方面／北海道分の集計。
+    写真は各出典ページを参照（本ページの図は模式図）。
+  </footer>
+</div>
