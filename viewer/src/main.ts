@@ -12,7 +12,14 @@ import {
   type SourceKey,
 } from './config'
 import { load1h, load5m, loadMeta, loadStations, type Frames } from './dataset'
-import { addStationLayers, applyFrame, buildFilter, CIRCLE_ID, RING_ID } from './stations'
+import {
+  addStationLayers,
+  applyFrame,
+  buildFilter,
+  CIRCLE_ID,
+  RING_ID,
+  updateScale,
+} from './stations'
 import { applyThemeAttr, initialTheme, type Theme } from './theme'
 import { BasemapControl } from './ui/basemapControl'
 import { $, fatal } from './ui/dom'
@@ -119,8 +126,17 @@ function currentFilter(): unknown[] {
   return buildFilter(visible, hideZero, meta.zero_stations)
 }
 
+/** 表示中のモードに対応する色スケールの上限。 */
+function currentScale(): number {
+  return mode === '1h' ? meta.scale_max_1h : (meta.scale_max_5m ?? meta.scale_max_1h)
+}
+
+function currentUnit(): string {
+  return mode === '1h' ? '台/h' : '台/5分'
+}
+
 function addLayers(): void {
-  addStationLayers(map, stationsGeoJSON, meta.scale_max_1h, currentFilter(), labelAnchor())
+  addStationLayers(map, stationsGeoJSON, currentScale(), currentFilter(), labelAnchor())
   // 貼り直し後は feature-state が失われるので、現在フレームを再投入する
   prevKeys = new Set()
   render(timeline.current)
@@ -184,9 +200,11 @@ async function loadMode(next: ModeKey, keepIndex = false): Promise<void> {
   }
   setLoading(false)
   renderModeButtons()
+  // 1時間値と5分値で値の桁が違うため、色・半径のスケールを張り替える
+  updateScale(map, currentScale())
   prevKeys = new Set()
   timeline.setSteps(steps, Math.min(prevIndex, steps.length - 1))
-  renderLegend($('legend'), meta.scale_max_1h, mode === '1h' ? '台/h' : '台/5分')
+  renderLegend($('legend'), currentScale(), currentUnit())
   persist()
 }
 
@@ -315,7 +333,7 @@ map.on('click', (e) => {
     frames,
     steps,
     timeline.current,
-    mode === '1h' ? '台/h' : '台/5分',
+    currentUnit(),
     zeroSet.has(uid),
   )
 })

@@ -20,6 +20,8 @@ export type Meta = {
   zero_stations: string[]
   /** 色スケールの上限（上位1%点）。外れ値で潰れないようにする。 */
   scale_max_1h: number
+  /** 5分値用の上限。1時間値と桁が違うのでモードごとに持つ。 */
+  scale_max_5m: number
   attribution: string[]
 }
 

@@ -143,6 +143,23 @@ export function addStationLayers(
 }
 
 /**
+ * 色・半径のスケール上限を差し替える。
+ *
+ * 1時間値（〜1,400台/h）と5分値（〜200台/5分）では桁が違うため、
+ * モード切替のたびに呼ぶ必要がある。共通の上限を使うと5分モードで
+ * 全点が低い側に張り付き、変化が見えなくなる。
+ */
+export function updateScale(map: maplibregl.Map, scaleMax: number): void {
+  if (map.getLayer(CIRCLE_ID)) {
+    map.setPaintProperty(CIRCLE_ID, 'circle-color', colorExpr(scaleMax) as never)
+    map.setPaintProperty(CIRCLE_ID, 'circle-radius', radiusExpr(scaleMax) as never)
+  }
+  if (map.getLayer(RING_ID)) {
+    map.setPaintProperty(RING_ID, 'circle-radius', radiusExpr(scaleMax, 1.6) as never)
+  }
+}
+
+/**
  * 1フレーム分の値を feature-state に流し込む。
  *
  * 前フレームで値があった地点は、今フレームに無ければ null に戻す必要がある

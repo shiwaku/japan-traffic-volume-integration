@@ -150,9 +150,15 @@ def export_viewer(cfg: Config, yyyymm: str) -> None:
                 GROUP BY station_uid HAVING max(volume_1h) = 0"""
         ).fetchall()
     ]
-    # 色スケールの上限は上位1%点（外れ値で潰れないように）
+    # 色スケールの上限は上位1%点（外れ値で潰れないように）。
+    # 1時間値と5分値で桁が違うため、モードごとに別の上限を持たせる
+    # （共通にすると5分モードで全点が低い側に張り付いて変化が見えない）。
     p99 = con.execute(
         f"""SELECT quantile_cont(volume_1h, 0.99) FROM {_hive(unified)} WHERE quality='ok'"""
+    ).fetchone()[0]
+    p99_5m = con.execute(
+        f"""SELECT quantile_cont(volume, 0.99) FROM {_hive(counts)}
+            WHERE source = 'police' AND volume IS NOT NULL"""
     ).fetchone()[0]
 
     meta = {
@@ -164,6 +170,7 @@ def export_viewer(cfg: Config, yyyymm: str) -> None:
         "unified_stations_by_source": unified_sources,
         "zero_stations": zero_uids,
         "scale_max_1h": int(p99) if p99 else 1000,
+        "scale_max_5m": int(p99_5m) if p99_5m else 100,
         "attribution": [
             "「断面交通量情報」（公益財団法人日本道路交通情報センター）を加工して作成",
             "国土交通省API機能による交通量(参考値)を加工して作成",
@@ -175,7 +182,8 @@ def export_viewer(cfg: Config, yyyymm: str) -> None:
     )
     print(
         f"[export-viewer] meta.json         : {len(hours)} 時刻ステップ / "
-        f"常時ゼロ {len(zero_uids)} 地点 / 色スケール上限 {meta['scale_max_1h']} 台/h"
+        f"常時ゼロ {len(zero_uids)} 地点 / 色スケール上限 "
+        f"{meta['scale_max_1h']} 台/h・{meta['scale_max_5m']} 台/5分"
     )
     con.close()
     print(f"[export-viewer] → {dst}（.gitignore対象・公開しないこと）")
