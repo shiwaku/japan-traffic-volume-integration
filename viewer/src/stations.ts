@@ -37,8 +37,14 @@ function colorExpr(scaleMax: number): unknown[] {
 /**
  * 交通量 → 半径。ズームでも大きさを変える。
  * 値が無い点は小さく描いて、値がある点を邪魔しないようにする。
+ *
+ * `offset` はリング用の上乗せ幅。MapLibre は ['zoom'] を
+ * **トップレベルの interpolate/step の入力にしか置けない**ため、
+ * `['+', radiusExpr(...), 1.6]` のように外側から包むと式が不正になる
+ * （"zoom expression may only be used as input to a top-level ..." で
+ * レイヤーごと無視され、リングが描画されない）。各ストップの内側で足す。
  */
-function radiusExpr(scaleMax: number): unknown[] {
+function radiusExpr(scaleMax: number, offset = 0): unknown[] {
   const byVolume = [
     'interpolate',
     ['linear'],
@@ -47,14 +53,19 @@ function radiusExpr(scaleMax: number): unknown[] {
     scaleMax * 0.5, 6,
     scaleMax, 10,
   ]
+  const at = (nodata: number, factor: number): unknown[] => [
+    '+',
+    ['case', ['==', VOL, null], nodata, ['*', byVolume, factor]],
+    offset,
+  ]
   return [
     'interpolate',
     ['linear'],
     ['zoom'],
-    8, ['case', ['==', VOL, null], 1.5, ['*', byVolume, 0.45]],
-    12, ['case', ['==', VOL, null], 2.5, ['*', byVolume, 0.8]],
-    15, ['case', ['==', VOL, null], 4, byVolume],
-    18, ['case', ['==', VOL, null], 6, ['*', byVolume, 1.6]],
+    8, at(1.5, 0.45),
+    12, at(2.5, 0.8),
+    15, at(4, 1),
+    18, at(6, 1.6),
   ]
 }
 
@@ -97,9 +108,7 @@ export function addStationLayers(
         source: SOURCE_ID,
         filter: filter as never,
         paint: {
-          'circle-radius': [
-            '+', radiusExpr(scaleMax) as never, 1.6,
-          ] as never,
+          'circle-radius': radiusExpr(scaleMax, 1.6) as never,
           'circle-color': 'rgba(0,0,0,0)',
           'circle-stroke-width': 1.4,
           'circle-stroke-color': [

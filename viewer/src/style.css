@@ -279,14 +279,23 @@ html, body {
 .spark-note { font-size: 9px; color: var(--fg-dim); }
 
 /* ---- 背景地図スイッチャー ---- */
-.basemap-ctrl { display: flex; overflow: hidden; }
+/* MapLibre の ctrl-group は既定で幅29pxに固定されるため、
+   解除しないとラベルが1文字ずつ縦に折り返される。 */
+.basemap-ctrl {
+  display: flex;
+  overflow: hidden;
+  width: auto !important;
+}
 .basemap-ctrl button {
   border: none;
   background: var(--panel);
   color: var(--fg);
   font-size: 11px;
-  padding: 5px 8px;
+  padding: 5px 9px;
   cursor: pointer;
+  white-space: nowrap;
+  width: auto;
+  height: auto;
 }
 .basemap-ctrl button + button { border-left: 1px solid var(--border); }
 .basemap-ctrl button.active { background: var(--accent); color: #fff; }
