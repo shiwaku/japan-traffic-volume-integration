@@ -65,7 +65,9 @@ def _load_tmt_coords(cfg: Config) -> list[dict[str, str]]:
 
 def build_stations(cfg: Config, regions: list[str], yyyymm: str) -> None:
     out_dir = ensure_dir(cfg.output_dir(yyyymm))
-    out_path = out_dir / "stations.parquet"
+    # 全地点（警察＋国交省）を含むマスタ。TMT座標を含むため公開不可。
+    # ファイル名で「全部入り」と「公開不可」の両方が伝わるようにしている。
+    out_path = out_dir / "stations_all_restricted.parquet"
 
     police_files = [
         cfg.police_dir(r, yyyymm) / "stations_police.parquet" for r in regions

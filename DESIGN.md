@@ -293,7 +293,7 @@ TMT座標(1,910地点・譲渡禁止)と国交省API座標(431地点・CC BY互�
 | 成果物 | 内容 | ライセンス | 公開 |
 |---|---|---|---|
 | `stations_open.{parquet,geojson}` | `location_source='mlit_api'` の431地点のみ | JARTIC/API規約(a) | **可**（出典表記のうえ） |
-| `stations_restricted.parquet` | TMT座標を含む全2,341地点 | TMT規約(b) | **不可**（要事前承認） |
+| `stations_all_restricted.parquet` | TMT座標を含む全2,341地点 | TMT規約(b) | **不可**（要事前承認） |
 | `stations.parquet` | stationsステップの中間出力（restrictedと同内容） | TMT規約(b) | **不可** |
 | `counts/source=*/` | 座標列を持たない（確認済み） | JARTIC規約(a) | **可** |
 | `counts_unified_1h/source=*/` | 同上 | JARTIC規約(a) | **可** |
@@ -302,7 +302,7 @@ TMT座標(1,910地点・譲渡禁止)と国交省API座標(431地点・CC BY互�
 `export` は旧・混在ファイル `stations.geojson` を検出したら削除する（誤公開の防止）。
 
 `counts` 系は `station_uid` のみを持ち座標列を含まないため、**警察分を含めてそのまま公開できる**。
-座標が必要な用途でのみ `stations_restricted` を参照する構造にすれば、制約の及ぶ範囲を最小化できる。
+座標が必要な用途でのみ `stations_all_restricted` を参照する構造にすれば、制約の及ぶ範囲を最小化できる。
 
 運用ルール:
 
@@ -382,7 +382,7 @@ japan-traffic-volume-integration/
 │       ├── counts/source={police,mlit_tracan,mlit_cctv}/   # 軸1: 機器別に物理分割
 │       ├── counts_unified_1h/source=.../                    # 同上
 │       ├── stations_open.{parquet,geojson}   # 軸2: 国交省座標のみ → 公開可
-│       └── stations_restricted.parquet       # 軸2: TMT座標を含む → 公開不可
+│       └── stations_all_restricted.parquet       # 軸2: TMT座標を含む → 公開不可
 └── reports/                # 検証レポートJSON（コミット対象）
 ```
 

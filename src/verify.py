@@ -29,7 +29,7 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
     out_dir = cfg.output_dir(yyyymm)
     counts = out_dir / "counts"
     unified = out_dir / "counts_unified_1h"
-    stations = out_dir / "stations.parquet"
+    stations = out_dir / "stations_all_restricted.parquet"
     con = duckdb.connect()
     report: dict = {
         "対象年月": yyyymm,

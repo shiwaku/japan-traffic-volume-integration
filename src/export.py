@@ -53,9 +53,11 @@ def _write_geojson(con: duckdb.DuckDBPyConnection, sql: str, path: Path) -> int:
 
 def export(cfg: Config, yyyymm: str) -> None:
     out_dir = cfg.output_dir(yyyymm)
-    stations = out_dir / "stations.parquet"
+    stations = out_dir / "stations_all_restricted.parquet"
     if not stations.exists():
-        raise RuntimeError("stations.parquet not found — run stations step first")
+        raise RuntimeError(
+            "stations_all_restricted.parquet not found — run stations step first"
+        )
 
     src = _q(stations)
     open_list = ", ".join(f"'{s}'" for s in OPEN_LOCATION_SOURCES)
@@ -74,26 +76,25 @@ def export(cfg: Config, yyyymm: str) -> None:
             TO '{_q(out_dir / "stations_open.parquet")}' (FORMAT PARQUET, COMPRESSION ZSTD)"""
     )
 
-    # --- 公開不可: TMT座標を含む全地点（社外持ち出し・公開には事前承認が必要） ---
-    con.execute(
-        f"""COPY (SELECT * FROM '{src}')
-            TO '{_q(out_dir / "stations_restricted.parquet")}'
-            (FORMAT PARQUET, COMPRESSION ZSTD)"""
-    )
-    n_restricted = con.execute(
-        f"""SELECT count(*) FROM '{src}'
-            WHERE lon IS NOT NULL AND location_source NOT IN ({open_list})"""
-    ).fetchone()[0]
+    # 全地点マスタ（stations_all_restricted.parquet）は stations ステップが出力済み。
+    # ここで複製すると同内容のファイルが2つでき、どちらが正本か分からなくなるため作らない。
+    n_all, n_tmt = con.execute(
+        f"""SELECT count(*),
+                   count(*) FILTER (lon IS NOT NULL
+                                    AND location_source NOT IN ({open_list}))
+            FROM '{src}'"""
+    ).fetchone()
 
-    # 旧・混在ファイルが残っていると誤って公開しかねないので削除する
-    legacy = out_dir / "stations.geojson"
-    if legacy.exists():
-        legacy.unlink()
-        print(f"[export] removed legacy mixed-license file: {legacy.name}")
+    # 旧世代の紛らわしいファイルが残っていると誤って公開しかねないので削除する
+    for name in ("stations.geojson", "stations.parquet", "stations_restricted.parquet"):
+        legacy = out_dir / name
+        if legacy.exists():
+            legacy.unlink()
+            print(f"[export] removed legacy file: {name}")
 
-    print(f"[export] stations_open.{{parquet,geojson}}  : {n_open:,} 地点（公開可・出典表記のうえ）")
+    print(f"[export] stations_open.{{parquet,geojson}}   : {n_open:,} 地点（公開可・出典表記のうえ）")
     print(
-        f"[export] stations_restricted.parquet        : "
-        f"{n_restricted:,} 地点がTMT座標（公開不可・要事前承認）"
+        f"[export] stations_all_restricted.parquet   : "
+        f"{n_all:,} 地点（うち{n_tmt:,}がTMT座標・公開不可）"
     )
     con.close()

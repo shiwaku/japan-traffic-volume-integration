@@ -58,8 +58,11 @@ counts_unified_1h/               断面1時間合計に正規化（両者を同�
   source=mlit_tracan/   0.4 MB    15万 station-hour
   source=mlit_cctv/     0.3 MB    15万 station-hour
 stations_open.{parquet,geojson}  国交省 431地点（座標あり）  → 公開可
-stations_restricted.parquet      全 2,341地点（TMT座標含む） → 公開不可
+stations_all_restricted.parquet  全 2,341地点（警察1,910＋国交省431）→ 公開不可
 ```
+
+**国交省と警察を含めた全地点データは `stations_all_restricted.parquet`**（2,341地点）。
+TMT座標を含むため公開はできないが、内部での分析・突合にはこれを使う。
 
 原本を含む `data/` 全体は約291MB（うち警察のZIP原本が221MB）。
 
@@ -92,9 +95,9 @@ police:3001:1610  2026-06-03 08:00  1110      12    ok      police
 | | 列 | 備考 |
 |---|---|---|
 | `stations_open` | `station_uid, source, pref_code, road_class, observer_type, lon, lat, location_source` | 国交省431地点。`observer_type` は `tracan` / `cctv` |
-| `stations_restricted` | 上記 + `name, direction_hint, drm_*` | 警察地点を含む。`name` は現地の交差点名と方向（例「厚別中央　２−４北北」）でネットワーク突合に有用 |
+| `stations_all_restricted` | 上記 + `name, direction_hint, drm_*` | 警察地点を含む。`name` は現地の交差点名と方向（例「厚別中央　２−４北北」）でネットワーク突合に有用 |
 
-> `stations_restricted` の座標は TMT 由来のため、**値をドキュメントや issue に貼らないこと**
+> `stations_all_restricted` の座標は TMT 由来のため、**値をドキュメントや issue に貼らないこと**
 > （それ自体が規約の禁じる「譲渡」に当たる）。
 
 #### まだ無いもの
@@ -108,7 +111,7 @@ PMTiles（tippecanoe 未導入）、ビューワ、7月以降の月次データ�
   同一列に並べたままだと誤って合算されうるため物理分割する
   （同一断面に併設されていれば二重計上になる）。横断クエリは
   `read_parquet('counts/**/*.parquet', hive_partitioning=true)` で可能
-- `stations_open` / `stations_restricted` … TMT座標（譲渡禁止）と
+- `stations_open` / `stations_all_restricted` … TMT座標（譲渡禁止）と
   国交省API座標（CC BY互換）を混ぜると、本来公開できる国交省地点まで
   TMTの制約に巻き込まれるため
 
@@ -137,7 +140,7 @@ con.sql(f"SELECT * FROM '{base}/counts_unified_1h/source=police/*.parquet'").sho
 
 1. `counts_unified_1h/source=police/` を主軸にする（都心部は警察地点の方が高密度。
    札幌都心の対象区域内に293地点ある一方、国交省地点はほぼ無い）
-2. `stations_restricted.parquet` から座標と `name` を引いてネットワークに紐づける
+2. `stations_all_restricted.parquet` から座標と `name` を引いてネットワークに紐づける
 3. `reports/{YYYYMM}_verify.json` の `常時ゼロ地点_uid` を**除外する**
    （感知器故障が0台として紛れ込むため。202606では警察の4.7%が該当）
 4. 同一断面に国交省地点も存在する場合は**合算しない**（二重計上になる。§2.4 参照）
