@@ -309,6 +309,7 @@ TMT座標(1,910地点・譲渡禁止)と国交省API座標(431地点・CC BY互�
 | 対象 | 扱い |
 |---|---|
 | `data/private/tmt/`（購入CSV原本） | `.gitignore` 対象。コミット・共有しない |
+| `output/`（成果物すべて） | `.gitignore` 対象。`data/` の外に置くため**独立した除外指定が必要**（`.gitignore` に `output/` あり） |
 | `stations_restricted.*`（TMT座標を含む） | `data/` 配下＝コミットしない。**社外公開は事前承認が必要** |
 | `stations_open.*`（国交省座標のみ） | JARTIC規約(a)のみ適用。出典表記のうえ公開可 |
 | 座標を含まない成果物（counts / counts_unified_1h / 集計レポート） | JARTIC規約(a)のみ適用。出典表記のうえ公開可 |
@@ -374,15 +375,15 @@ japan-traffic-volume-integration/
 │   ├── unify.py            # counts_unified 生成（DuckDB）
 │   ├── export.py           # GeoParquet / PMTiles / 時刻別JSON
 │   └── verify.py           # 結合率・欠測率・ペア相関レポート（reports/ にJSONコミット）
-├── data/                   # .gitignore 対象
-│   ├── police/{region}/{YYYYMM}/   # raw zip + parquet
+├── data/                   # 取得した原本・中間生成物（.gitignore 対象）
+│   ├── police/{region}/{YYYYMM}/    # raw zip + parquet
 │   ├── mlit_api/{YYYYMM}/           # 交通量APIから取得したCSV + parquet
-│   ├── private/tmt/                 # 購入した位置情報CSV（譲渡禁止）
-│   └── output/{YYYYMM}/
-│       ├── counts/source={police,mlit_tracan,mlit_cctv}/   # 軸1: 機器別に物理分割
-│       ├── counts_unified_1h/source=.../                    # 同上
-│       ├── stations_open.{parquet,geojson}   # 軸2: 国交省座標のみ → 公開可
-│       └── stations_all_restricted.parquet       # 軸2: TMT座標を含む → 公開不可
+│   └── private/tmt/                 # 購入した位置情報CSV（譲渡禁止）
+├── output/{YYYYMM}/        # 成果物（.gitignore 対象）
+│   ├── counts/source={police,mlit_tracan,mlit_cctv}/   # 軸1: 機器別に物理分割
+│   ├── counts_unified_1h/source=.../                   # 同上
+│   ├── stations_open.{parquet,geojson}       # 軸2: 国交省座標のみ → 公開可
+│   └── stations_all_restricted.parquet       # 軸2: TMT座標を含む → 公開不可
 └── reports/                # 検証レポートJSON（コミット対象）
 ```
 

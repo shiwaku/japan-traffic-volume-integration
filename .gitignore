@@ -1,8 +1,12 @@
-# データ実体はコミットしない（レポートJSONは reports/ にコミットする）
+# 取得データ・中間生成物はコミットしない
 data/
 
-# 有償データ（再配布禁止）は念のため明示
+# 有償データ（譲渡禁止）は念のため明示
 data/private/
+
+# 成果物。stations_all_restricted.parquet は TMT座標（譲渡禁止）を含むため
+# 絶対にコミットしないこと。検証レポートのみ reports/ にコミットする。
+output/
 
 *.log
 __pycache__/

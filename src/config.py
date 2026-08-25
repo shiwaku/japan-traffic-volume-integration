@@ -25,6 +25,11 @@ class Config:
         return REPO_ROOT / self.pipeline["paths"]["data_dir"]
 
     @property
+    def out_dir(self) -> Path:
+        """成果物の置き場。取得データ・中間物（data/）とは分けてトップレベルに置く。"""
+        return REPO_ROOT / self.pipeline["paths"]["output_dir"]
+
+    @property
     def reports_dir(self) -> Path:
         return REPO_ROOT / self.pipeline["paths"]["reports_dir"]
 
@@ -39,7 +44,7 @@ class Config:
         return self.data_dir / "mlit_api" / yyyymm
 
     def output_dir(self, yyyymm: str) -> Path:
-        return self.data_dir / "output" / yyyymm
+        return self.out_dir / yyyymm
 
     def tmt_dir(self) -> Path:
         return self.data_dir / "private" / "tmt"

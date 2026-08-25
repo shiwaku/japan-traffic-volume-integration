@@ -44,7 +44,7 @@ python run.py --step stations,unify,export,verify --regions sapporo --month 2026
 | export | 観測点を**ライセンスの出所別に分割**して出力（PMTilesはtippecanoe導入後） |
 | verify | 検証レポートJSONを `reports/` に出力（コミット対象） |
 
-### 成果物（`data/output/{YYYYMM}/`）
+### 成果物（`output/{YYYYMM}/`）
 
 2026年6月・札幌方面の実績。**生データ1.3GB相当が22MBに収まる**（Parquet + zstd）。
 
@@ -123,7 +123,7 @@ PMTiles（tippecanoe 未導入）、ビューワ、7月以降の月次データ�
 import duckdb
 
 con = duckdb.connect()
-base = "data/output/202606"
+base = "output/202606"
 
 # 両ソース横断（Hiveパーティションを跨いで読む）
 con.sql(f"""
