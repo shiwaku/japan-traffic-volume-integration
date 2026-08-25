@@ -180,6 +180,31 @@
     font-family: 'Roboto Mono', monospace;
   }
 
+  /* ---- 実物写真 ---- */
+  /* 写真が1枚のときに間延びしないよう、1カラムの最大幅を抑える */
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 500px));
+    gap: 16px 20px;
+    padding: 4px 22px 18px;
+    justify-content: start;
+  }
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: 7px; }
+
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--rule);
+    background: var(--surface-2);
+  }
+
+  figcaption { font-size: 12px; line-height: 1.55; color: var(--ink-2); }
+  figcaption b { display: block; font-size: 12.5px; color: var(--ink); font-weight: 700; }
+  figcaption .cred { color: var(--ink-3); font-size: 10.5px; }
+
   .facts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -355,6 +380,21 @@
           </svg>
         </div>
         <p class="fig-note">超音波を路面へ間欠発射し、反射の時間差で車両の存在を検出する（存在型）</p>
+        <div class="photos">
+          <figure>
+            <img src="figures/police-detector.jpg" alt="腕木に取り付けられた超音波式車両感知器。ラッパ状の送受器が下を向き、上部に「感知器」の標示板が付く"
+                 loading="lazy" width="900" height="682">
+            <figcaption>
+              <b>超音波式車両感知器（実物）</b>
+              ラッパ状の送受器が路面へ向く。「感知器」の標示板とアームへの取付金具が見える。
+              <span class="cred">
+                Ebiebi2 / Wikimedia Commons,
+                <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+                （<a href="https://commons.wikimedia.org/wiki/File:Traffic_light_vehicle_Sensor_1.jpg">原典</a>・表示サイズのみ変更）
+              </span>
+            </figcaption>
+          </figure>
+        </div>
         <dl class="facts">
           <div class="fact"><dt>設置場所</dt><dd>交差点の流入部。管制センター管轄の都道府県道・市道も含む</dd></div>
           <div class="fact"><dt>方式</dt><dd>超音波式が最多。ほかにループ式・マイクロ波・光ビーコン・画像式</dd></div>
@@ -414,6 +454,19 @@
           </svg>
         </div>
         <p class="fig-note">ループコイル式（電磁誘導）と超音波式が混在。地整によってはレーダも使う</p>
+        <div class="photos">
+          <figure>
+            <img src="figures/tracan-installation.png" alt="路側の支柱から車道上へ伸びたアームの先に、下向きのセンサが付いた常設トラカンの設置状況"
+                 loading="lazy" width="530" height="350">
+            <figcaption>
+              <b>トラカン設置状況（実物）</b>
+              路側の支柱からアームが車道上へ伸び、先端に下向きのセンサが付く。左は先端の拡大。
+              <span class="cred">
+                出典：「既設カメラを活用した画像認識型交通量観測装置(AIトラカン)の試行的活用について」（<a href="https://www.hrr.mlit.go.jp/library/happyoukai/R5/a/a-03.pdf">国土交通省 北陸地方整備局</a>）写真-1 を加工して作成
+              </span>
+            </figcaption>
+          </figure>
+        </div>
         <dl class="facts">
           <div class="fact"><dt>設置場所</dt><dd>直轄国道の単路部（交差点間の断面）</dd></div>
           <div class="fact"><dt>方式</dt><dd>ループコイル・超音波の混在。実データで両方の異常フラグを確認</dd></div>
@@ -480,6 +533,31 @@
           </svg>
         </div>
         <p class="fig-note">道路上に機器を足さず、解析サーバーだけを増設する。外観では判別できない</p>
+        <div class="photos">
+          <figure>
+            <img src="figures/cctv-installation.png" alt="道路脇の柱の上に設置された道路管理用CCTVカメラ。右上に本体の拡大"
+                 loading="lazy" width="505" height="340">
+            <figcaption>
+              <b>CCTVカメラ設置状況（実物）</b>
+              道路管理用として既に立っているカメラ。これをそのまま交通量観測に使う。
+              <span class="cred">
+                出典：同資料 写真-2（<a href="https://www.hrr.mlit.go.jp/library/happyoukai/R5/a/a-03.pdf">国土交通省 北陸地方整備局</a>）を加工して作成
+              </span>
+            </figcaption>
+          </figure>
+          <figure>
+            <img src="figures/ai-detection.png" alt="CCTV映像上で車両が矩形で検知されている様子。青枠が大型車、赤枠が小型車、黄線が計測領域"
+                 loading="lazy" width="505" height="350">
+            <figcaption>
+              <b>AI検知のイメージ</b>
+              <span style="color:var(--tracan)">青枠</span>が大型車、<span style="color:#c0392b">赤枠</span>が小型車、黄線が計測領域。
+              この枠の出入りを数えて交通量にする。
+              <span class="cred">
+                出典：同資料 図-1（<a href="https://www.hrr.mlit.go.jp/library/happyoukai/R5/a/a-03.pdf">国土交通省 北陸地方整備局</a>）を加工して作成
+              </span>
+            </figcaption>
+          </figure>
+        </div>
         <dl class="facts">
           <div class="fact"><dt>設置場所</dt><dd>直轄国道の単路部。既設カメラの画角に依存</dd></div>
           <div class="fact"><dt>方式</dt><dd>AI画像解析。カメラ高さ6.5m以上・俯角20〜30度・4車線以下が条件</dd></div>
@@ -620,8 +698,27 @@
     </ul>
   </section>
 
+  <section class="sources">
+    <h2>06 — 図版のライセンス</h2>
+    <ul>
+      <li>
+        <strong>トラカン設置状況・CCTVカメラ設置状況・AI検知イメージ</strong>：
+        国土交通省 北陸地方整備局の技術発表資料より。国土交通省ウェブサイトのコンテンツは
+        <a href="https://www.mlit.go.jp/link.html">公共データ利用規約（第1.0版）</a>に基づき、
+        出典表示のうえ複製・加工して利用できる（CC BY 互換）。本ページでは表示のため切り出し・縮小を行った。
+      </li>
+      <li>
+        <strong>超音波式車両感知器</strong>：Ebiebi2 氏撮影、Wikimedia Commons、
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>。
+        表示サイズの変更のみで内容は改変していない。同ライセンスの条件に従って表示している。
+      </li>
+      <li><strong>設置形態の模式図（3点）</strong>：本ページのために作成。</li>
+    </ul>
+  </section>
+
   <footer>
     交通量は参考値であり、正式な調査結果ではない。実測値は2026年6月・札幌方面／北海道分の集計。
-    写真は各出典ページを参照（本ページの図は模式図）。
+    実物写真をさらに探す場合は
+    <a href="sensor-types.md">sensor-types.md</a> のリンク集（約40件）を参照。
   </footer>
 </div>
