@@ -3,7 +3,7 @@
   "対象地域": [
     "sapporo"
   ],
-  "生成日時": "2026-08-25T08:35:11+09:00",
+  "生成日時": "2026-08-25T12:02:58+09:00",
   "stations": {
     "mlit": {
       "地点数": 431,
@@ -11,7 +11,7 @@
     },
     "police": {
       "地点数": 1910,
-      "座標あり": 0
+      "座標あり": 1910
     }
   },
   "counts": {
@@ -61,5 +61,233 @@
     }
   },
   "低カバレッジ日": [],
-  "近接ペア相関": "警察地点に座標なし（TMT詳細版の結合後に有効化）"
+  "常時ゼロ地点": {
+    "mlit_cctv": {
+      "地点数": 0,
+      "対象地点数": 162,
+      "割合": 0.0
+    },
+    "mlit_tracan": {
+      "地点数": 1,
+      "対象地点数": 208,
+      "割合": 0.48
+    },
+    "police": {
+      "地点数": 88,
+      "対象地点数": 1857,
+      "割合": 4.74
+    }
+  },
+  "常時ゼロ地点_uid": [
+    "mlit:1310630",
+    "police:3001:1030",
+    "police:3001:1070",
+    "police:3001:1186",
+    "police:3001:1217",
+    "police:3001:1237",
+    "police:3001:1244",
+    "police:3001:1283",
+    "police:3001:1287",
+    "police:3001:1289",
+    "police:3001:1294",
+    "police:3001:1298",
+    "police:3001:1317",
+    "police:3001:1420",
+    "police:3001:15",
+    "police:3001:1671",
+    "police:3001:1672",
+    "police:3001:1731",
+    "police:3001:1734",
+    "police:3001:1753",
+    "police:3001:185",
+    "police:3001:186",
+    "police:3001:197",
+    "police:3001:2063",
+    "police:3001:2082",
+    "police:3001:2102",
+    "police:3001:222",
+    "police:3001:2341",
+    "police:3001:2361",
+    "police:3001:2364",
+    "police:3001:2380",
+    "police:3001:2390",
+    "police:3001:2427",
+    "police:3001:2444",
+    "police:3001:255",
+    "police:3001:2649",
+    "police:3001:2794",
+    "police:3001:2796",
+    "police:3001:3244",
+    "police:3001:332",
+    "police:3001:335",
+    "police:3001:349",
+    "police:3001:3495",
+    "police:3001:3884",
+    "police:3001:4031",
+    "police:3001:4041",
+    "police:3001:405",
+    "police:3001:4399",
+    "police:3001:4405",
+    "police:3001:4475",
+    "police:3001:4682",
+    "police:3001:4737",
+    "police:3001:4738",
+    "police:3001:4741",
+    "police:3001:4742",
+    "police:3001:4752",
+    "police:3001:4810",
+    "police:3001:4833",
+    "police:3001:4843",
+    "police:3001:4884",
+    "police:3001:4971",
+    "police:3001:4972",
+    "police:3001:4975",
+    "police:3001:504",
+    "police:3001:5077",
+    "police:3001:5078",
+    "police:3001:510",
+    "police:3001:5109",
+    "police:3001:5147",
+    "police:3001:5190",
+    "police:3001:5192",
+    "police:3001:557",
+    "police:3001:664",
+    "police:3001:7",
+    "police:3001:717",
+    "police:3001:718",
+    "police:3001:747",
+    "police:3001:774",
+    "police:3001:813",
+    "police:3001:825",
+    "police:3001:866",
+    "police:3001:911",
+    "police:3001:941",
+    "police:3001:947",
+    "police:3001:950",
+    "police:3001:971",
+    "police:3001:978",
+    "police:3001:994",
+    "police:3001:995"
+  ],
+  "近接ペア相関": [
+    {
+      "police": "police:3001:918",
+      "mlit": "mlit:1811010",
+      "dist_m": 30.6,
+      "corr": 0.901,
+      "n_hours": 520
+    },
+    {
+      "police": "police:3001:1200",
+      "mlit": "mlit:1310590",
+      "dist_m": 32.1,
+      "corr": 0.988,
+      "n_hours": 705
+    },
+    {
+      "police": "police:3001:4720",
+      "mlit": "mlit:1810110",
+      "dist_m": 40.7,
+      "corr": 0.98,
+      "n_hours": 594
+    },
+    {
+      "police": "police:3001:1757",
+      "mlit": "mlit:1310700",
+      "dist_m": 41.2,
+      "corr": 0.992,
+      "n_hours": 708
+    },
+    {
+      "police": "police:3001:1260",
+      "mlit": "mlit:1310590",
+      "dist_m": 63.5,
+      "corr": 0.967,
+      "n_hours": 313
+    },
+    {
+      "police": "police:3001:503",
+      "mlit": "mlit:1310060",
+      "dist_m": 68.8,
+      "corr": 0.94,
+      "n_hours": 707
+    },
+    {
+      "police": "police:3001:1610",
+      "mlit": "mlit:1310080",
+      "dist_m": 71.5,
+      "corr": 0.993,
+      "n_hours": 702
+    },
+    {
+      "police": "police:3001:4402",
+      "mlit": "mlit:1310430",
+      "dist_m": 73.5,
+      "corr": 0.947,
+      "n_hours": 405
+    },
+    {
+      "police": "police:3001:1766",
+      "mlit": "mlit:1310700",
+      "dist_m": 83.5,
+      "corr": 0.988,
+      "n_hours": 708
+    },
+    {
+      "police": "police:3001:956",
+      "mlit": "mlit:1110600",
+      "dist_m": 106.0,
+      "corr": 0.851,
+      "n_hours": 706
+    },
+    {
+      "police": "police:3001:13",
+      "mlit": "mlit:1810120",
+      "dist_m": 110.6,
+      "corr": 0.965,
+      "n_hours": 626
+    },
+    {
+      "police": "police:3001:747",
+      "mlit": "mlit:1310370",
+      "dist_m": 111.8,
+      "corr": null,
+      "n_hours": 207
+    },
+    {
+      "police": "police:3001:825",
+      "mlit": "mlit:1310370",
+      "dist_m": 115.1,
+      "corr": null,
+      "n_hours": 207
+    },
+    {
+      "police": "police:3001:1202",
+      "mlit": "mlit:1310590",
+      "dist_m": 117.8,
+      "corr": 0.976,
+      "n_hours": 687
+    },
+    {
+      "police": "police:3001:3485",
+      "mlit": "mlit:1111330",
+      "dist_m": 137.0,
+      "corr": 0.925,
+      "n_hours": 663
+    },
+    {
+      "police": "police:3001:901",
+      "mlit": "mlit:1110090",
+      "dist_m": 143.0,
+      "corr": 0.974,
+      "n_hours": 696
+    },
+    {
+      "police": "police:3001:3480",
+      "mlit": "mlit:1111330",
+      "dist_m": 149.3,
+      "corr": 0.916,
+      "n_hours": 666
+    }
+  ]
 }

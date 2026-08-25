@@ -83,6 +83,35 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
         {"source": r[0], "date": str(r[1]), "records": r[2], "median": r[3]} for r in low_days
     ]
 
+    # 常時ゼロ地点: 月間を通じて交通量が0のまま＝感知器の故障・休止の疑い。
+    # typeB は欠測フラグを持たないため「本当に0台」と区別できない。
+    # 分析・キャリブレーションでは除外候補として扱うこと。
+    zero_stations = con.execute(
+        f"""WITH per_station AS (
+                SELECT station_uid, ANY_VALUE(source) AS source, max(volume_1h) AS mx
+                FROM '{_q(unified)}' WHERE quality = 'ok' GROUP BY station_uid
+            )
+            SELECT source,
+                   count(*) FILTER (mx = 0) AS zero_stations,
+                   count(*) AS total_stations
+            FROM per_station GROUP BY source ORDER BY source"""
+    ).fetchall()
+    report["常時ゼロ地点"] = {
+        r[0]: {
+            "地点数": r[1],
+            "対象地点数": r[2],
+            "割合": round(100.0 * r[1] / r[2], 2) if r[2] else None,
+        }
+        for r in zero_stations
+    }
+    report["常時ゼロ地点_uid"] = [
+        r[0]
+        for r in con.execute(
+            f"""SELECT station_uid FROM '{_q(unified)}' WHERE quality = 'ok'
+                GROUP BY station_uid HAVING max(volume_1h) = 0 ORDER BY station_uid"""
+        ).fetchall()
+    ]
+
     # 近接ペア相関（警察側に座標がある場合のみ）
     n_police_coords = con.execute(
         f"SELECT count(*) FROM '{_q(stations)}' WHERE source='police' AND lon IS NOT NULL"
