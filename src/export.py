@@ -32,6 +32,27 @@ def _q(p: Path) -> str:
     return str(p).replace("'", "''")
 
 
+def _write_geoparquet(con: duckdb.DuckDBPyConnection, src: str, path: Path) -> bool:
+    """GeoParquet として書き出す（QGIS 3.28+ / GDAL 3.5+ で直接開ける）。
+
+    素のParquetでは lon/lat が単なる数値列のため QGIS がジオメトリと認識しない。
+    DuckDB の spatial 拡張が使えない環境では GeoJSON にフォールバックする。
+    """
+    try:
+        con.execute("INSTALL spatial; LOAD spatial;")
+        con.execute(
+            f"""COPY (
+                    SELECT * EXCLUDE (lon, lat), ST_Point(lon, lat) AS geometry
+                    FROM '{src}' WHERE lon IS NOT NULL AND lat IS NOT NULL
+                ) TO '{_q(path)}'
+                (FORMAT PARQUET, COMPRESSION ZSTD)"""
+        )
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"[export] GeoParquet 出力をスキップ（spatial拡張が使えない）: {e}")
+        return False
+
+
 def _write_geojson(con: duckdb.DuckDBPyConnection, sql: str, path: Path) -> int:
     rows = con.execute(sql).fetchall()
     cols = [d[0] for d in con.description]
@@ -76,8 +97,17 @@ def export(cfg: Config, yyyymm: str) -> None:
             TO '{_q(out_dir / "stations_open.parquet")}' (FORMAT PARQUET, COMPRESSION ZSTD)"""
     )
 
-    # 全地点マスタ（stations_all_restricted.parquet）は stations ステップが出力済み。
-    # ここで複製すると同内容のファイルが2つでき、どちらが正本か分からなくなるため作らない。
+    # --- 公開不可（ローカル分析・QGIS用）: 全地点 ---
+    # stations ステップが出力する .parquet は素のParquetで、lon/lat が単なる数値列のため
+    # QGIS はジオメトリと認識しない。GIS で開ける形式を別途書き出す。
+    n_all_geo = _write_geojson(
+        con,
+        f"""SELECT {PROPS}, lon, lat FROM '{src}'
+            WHERE lon IS NOT NULL AND lat IS NOT NULL""",
+        out_dir / "stations_all_restricted.geojson",
+    )
+    _write_geoparquet(con, src, out_dir / "stations_all_restricted_geo.parquet")
+
     n_all, n_tmt = con.execute(
         f"""SELECT count(*),
                    count(*) FILTER (lon IS NOT NULL
@@ -92,9 +122,11 @@ def export(cfg: Config, yyyymm: str) -> None:
             legacy.unlink()
             print(f"[export] removed legacy file: {name}")
 
-    print(f"[export] stations_open.{{parquet,geojson}}   : {n_open:,} 地点（公開可・出典表記のうえ）")
+    print(f"[export] stations_open.{{parquet,geojson}}          : {n_open:,} 地点（公開可・出典表記のうえ）")
     print(
-        f"[export] stations_all_restricted.parquet   : "
-        f"{n_all:,} 地点（うち{n_tmt:,}がTMT座標・公開不可）"
+        f"[export] stations_all_restricted.{{geojson,_geo.parquet}} : "
+        f"{n_all_geo:,} 地点（全{n_all:,}中・うち{n_tmt:,}がTMT座標・公開不可）"
     )
+    print("[export] QGISで開く場合は .geojson または _geo.parquet を使う"
+          "（stations_all_restricted.parquet は素のParquetで座標が属性列）")
     con.close()

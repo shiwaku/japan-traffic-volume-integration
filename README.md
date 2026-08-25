@@ -57,12 +57,20 @@ counts_unified_1h/               断面1時間合計に正規化（両者を同�
   source=police/        3.0 MB   126万 station-hour
   source=mlit_tracan/   0.4 MB    15万 station-hour
   source=mlit_cctv/     0.3 MB    15万 station-hour
-stations_open.{parquet,geojson}  国交省 431地点（座標あり）  → 公開可
-stations_all_restricted.parquet  全 2,341地点（警察1,910＋国交省431）→ 公開不可
+stations_open.{parquet,geojson}       国交省 431地点          → 公開可
+stations_all_restricted.parquet       全 2,341地点（属性のみ）→ 公開不可
+stations_all_restricted.geojson       同上（QGIS用）          → 公開不可
+stations_all_restricted_geo.parquet   同上（GeoParquet 1.1）  → 公開不可
 ```
 
-**国交省と警察を含めた全地点データは `stations_all_restricted.parquet`**（2,341地点）。
+**国交省と警察を含めた全地点データは `stations_all_restricted.*`**（2,341地点＝警察1,910＋国交省431）。
 TMT座標を含むため公開はできないが、内部での分析・突合にはこれを使う。
+
+> **QGISで開くときは `.geojson` か `_geo.parquet` を使うこと。**
+> `stations_all_restricted.parquet` は素のParquetで `lon`/`lat` が単なる数値列のため、
+> QGISはジオメトリと認識せず地図に表示されない（属性テーブルとしては開ける）。
+> `_geo.parquet` は WKB ジオメトリ列 + GeoParquet メタデータを持つので直接描画できる
+> （QGIS 3.28+ / GDAL 3.5+）。DuckDB での集計は素の `.parquet` の方が扱いやすい。
 
 原本を含む `data/` 全体は約291MB（うち警察のZIP原本が221MB）。
 
@@ -141,6 +149,7 @@ con.sql(f"SELECT * FROM '{base}/counts_unified_1h/source=police/*.parquet'").sho
 1. `counts_unified_1h/source=police/` を主軸にする（都心部は警察地点の方が高密度。
    札幌都心の対象区域内に293地点ある一方、国交省地点はほぼ無い）
 2. `stations_all_restricted.parquet` から座標と `name` を引いてネットワークに紐づける
+   （QGISで目視確認する場合は `.geojson` か `_geo.parquet` を開く）
 3. `reports/{YYYYMM}_verify.json` の `常時ゼロ地点_uid` を**除外する**
    （感知器故障が0台として紛れ込むため。202606では警察の4.7%が該当）
 4. 同一断面に国交省地点も存在する場合は**合算しない**（二重計上になる。§2.4 参照）
