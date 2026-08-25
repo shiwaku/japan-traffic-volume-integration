@@ -7,6 +7,9 @@
 設計の全容は [DESIGN.md](DESIGN.md) を参照。
 Phase 1（札幌方面・2026年6月分）のパイプラインが動作済み。検証結果は [reports/](reports/) を参照。
 
+3系統の計測機器（国交省の常設トラカン／CCTVトラカン、警察の車両感知器）の設置形態・計測原理・
+現地での見分け方は **[docs/sensor-types.md](docs/sensor-types.md)** にまとめている。
+
 ## Phase 1 の検証結果（2026年6月・札幌方面）
 
 | 指標 | 結果 |
