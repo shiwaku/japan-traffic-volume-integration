@@ -1,5 +1,6 @@
 paths:
-  data_dir: data
+  data_dir: data        # 取得した原本・中間生成物
+  output_dir: output    # 成果物（data/ とは分けてトップレベルに置く）
   reports_dir: reports
   # 国交省側のローカル蓄積（japan-jartic-traffic-data）。存在すれば ingest-mlit で利用可能
   mlit_local_dir: ../japan-jartic-traffic-data/data

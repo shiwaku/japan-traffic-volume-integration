@@ -20,11 +20,16 @@ def _q(p: Path) -> str:
     return str(p).replace("'", "''")
 
 
+def _hive(p: Path) -> str:
+    """source= でパーティション分割されたディレクトリを横断して読む。"""
+    return f"read_parquet('{_q(p)}/**/*.parquet', hive_partitioning=true)"
+
+
 def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
     out_dir = cfg.output_dir(yyyymm)
-    counts = out_dir / "counts.parquet"
-    unified = out_dir / "counts_unified_1h.parquet"
-    stations = out_dir / "stations.parquet"
+    counts = out_dir / "counts"
+    unified = out_dir / "counts_unified_1h"
+    stations = out_dir / "stations_all_restricted.parquet"
     con = duckdb.connect()
     report: dict = {
         "対象年月": yyyymm,
@@ -50,7 +55,7 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
             f"""SELECT source, count(*),
                 round(100.0 * count(*) FILTER (quality <> 'ok') / count(*), 3),
                 min(ts), max(ts), count(DISTINCT station_uid)
-                FROM '{_q(counts)}' GROUP BY source ORDER BY source"""
+                FROM {_hive(counts)} GROUP BY source ORDER BY source"""
         ).fetchall()
     }
 
@@ -64,7 +69,7 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
             f"""SELECT source, count(*),
                 round(100.0 * count(*) FILTER (quality = 'ok') / count(*), 2),
                 round(avg(volume_1h) FILTER (quality = 'ok'), 1)
-                FROM '{_q(unified)}' GROUP BY source ORDER BY source"""
+                FROM {_hive(unified)} GROUP BY source ORDER BY source"""
         ).fetchall()
     }
 
@@ -72,7 +77,7 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
     low_days = con.execute(
         f"""WITH daily AS (
                 SELECT source, CAST(ts AS DATE) AS d, count(*) AS n
-                FROM '{_q(counts)}' GROUP BY source, d
+                FROM {_hive(counts)} GROUP BY source, d
             ), med AS (
                 SELECT source, median(n) AS m FROM daily GROUP BY source
             )
@@ -81,6 +86,35 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
     ).fetchall()
     report["低カバレッジ日"] = [
         {"source": r[0], "date": str(r[1]), "records": r[2], "median": r[3]} for r in low_days
+    ]
+
+    # 常時ゼロ地点: 月間を通じて交通量が0のまま＝感知器の故障・休止の疑い。
+    # typeB は欠測フラグを持たないため「本当に0台」と区別できない。
+    # 分析・キャリブレーションでは除外候補として扱うこと。
+    zero_stations = con.execute(
+        f"""WITH per_station AS (
+                SELECT station_uid, ANY_VALUE(source) AS source, max(volume_1h) AS mx
+                FROM {_hive(unified)} WHERE quality = 'ok' GROUP BY station_uid
+            )
+            SELECT source,
+                   count(*) FILTER (mx = 0) AS zero_stations,
+                   count(*) AS total_stations
+            FROM per_station GROUP BY source ORDER BY source"""
+    ).fetchall()
+    report["常時ゼロ地点"] = {
+        r[0]: {
+            "地点数": r[1],
+            "対象地点数": r[2],
+            "割合": round(100.0 * r[1] / r[2], 2) if r[2] else None,
+        }
+        for r in zero_stations
+    }
+    report["常時ゼロ地点_uid"] = [
+        r[0]
+        for r in con.execute(
+            f"""SELECT station_uid FROM {_hive(unified)} WHERE quality = 'ok'
+                GROUP BY station_uid HAVING max(volume_1h) = 0 ORDER BY station_uid"""
+        ).fetchall()
     ]
 
     # 近接ペア相関（警察側に座標がある場合のみ）
@@ -107,8 +141,8 @@ def verify(cfg: Config, regions: list[str], yyyymm: str) -> None:
                    corr(a.volume_1h, b.volume_1h) AS r,
                    count(*) AS n_hours
             FROM pair
-            JOIN '{_q(unified)}' a ON a.station_uid = pair.police_uid AND a.quality = 'ok'
-            JOIN '{_q(unified)}' b ON b.station_uid = pair.mlit_uid
+            JOIN {_hive(unified)} a ON a.station_uid = pair.police_uid AND a.quality = 'ok'
+            JOIN {_hive(unified)} b ON b.station_uid = pair.mlit_uid
                  AND b.ts_hour = a.ts_hour AND b.quality = 'ok'
             WHERE dist_m <= 150
             GROUP BY ALL HAVING count(*) >= 24

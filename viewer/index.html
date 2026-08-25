@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>統合交通量ビューワ</title>
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- タイトルとコントロールは1枚のパネルにまとめる -->
+    <section id="panel" class="panel" aria-label="コントロールパネル">
+      <header class="panel-head">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">🚗</span>
+          <h1>統合交通量ビューワ<span id="subtitle" class="brand-sub">読み込み中…</span></h1>
+        </div>
+        <div class="head-actions">
+          <button id="theme-btn" class="icon-btn" type="button" title="テーマ切替" aria-label="テーマ切替"></button>
+          <button id="collapse-btn" class="icon-btn" type="button" title="パネル開閉" aria-label="パネル開閉"></button>
+        </div>
+      </header>
+
+      <div id="panel-body" class="panel-body">
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">機器</span>
+          </div>
+          <div id="sources"></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">品質</span>
+          </div>
+          <label class="chk">
+            <input type="checkbox" id="hide-zero" />
+            <span>常時ゼロ地点を隠す<em id="zero-count"></em></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">凡例</span>
+          </div>
+          <div id="legend"></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head">
+            <span class="field-label">表示範囲</span>
+            <div class="field-actions">
+              <button id="fit-cordon" class="mini-btn" type="button" title="シミュレーション対象区域">札幌都心</button>
+              <button id="fit-all" class="mini-btn" type="button" title="北海道全域">全体</button>
+            </div>
+          </div>
+          <div id="stats" class="stats"></div>
+        </div>
+
+        <p class="hint">観測点をクリックすると値と日変動が出ます。</p>
+      </div>
+
+      <footer class="panel-foot">
+        <div id="attribution"></div>
+        <span id="build-ver" class="build-ver"></span>
+      </footer>
+    </section>
+
+    <footer id="timebar">
+      <div class="tb-modes" id="modes"></div>
+      <select id="day-select" class="tb-day" hidden></select>
+      <button id="play-btn" type="button" class="tb-play">▶</button>
+      <input id="time-slider" class="tb-slider" type="range" min="0" max="0" value="0" />
+      <output id="time-label" class="tb-label">—</output>
+      <span id="loading" class="tb-loading" hidden>読込中…</span>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
