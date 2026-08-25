@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>統合交通量ビューワ</title>
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <header id="header">
+      <h1>統合交通量ビューワ<span id="subtitle"></span></h1>
+      <button id="theme-btn" type="button" title="テーマ切替">🌙</button>
+    </header>
+
+    <section id="panel">
+      <button id="collapse-btn" type="button" title="パネル開閉">▴</button>
+
+      <div class="panel-body">
+        <div class="group">
+          <div class="group-title">機器</div>
+          <div id="sources"></div>
+        </div>
+
+        <div class="group">
+          <div class="group-title">品質</div>
+          <label class="chk">
+            <input type="checkbox" id="hide-zero" />
+            <span>常時ゼロ地点を隠す<em id="zero-count"></em></span>
+          </label>
+        </div>
+
+        <div class="group">
+          <div class="group-title">凡例</div>
+          <div id="legend"></div>
+        </div>
+
+        <div class="group">
+          <button id="fit-cordon" type="button" class="btn">札幌都心へ</button>
+          <button id="fit-all" type="button" class="btn">全体表示</button>
+        </div>
+
+        <div class="group meta">
+          <div id="stats"></div>
+          <div id="attribution"></div>
+          <div id="build-ver"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer id="timebar">
+      <div class="tb-modes" id="modes"></div>
+      <select id="day-select" class="tb-day" hidden></select>
+      <button id="play-btn" type="button" class="tb-play">▶</button>
+      <input id="time-slider" class="tb-slider" type="range" min="0" max="0" value="0" />
+      <output id="time-label" class="tb-label">—</output>
+      <span id="loading" class="tb-loading" hidden>読込中…</span>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

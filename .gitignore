@@ -4,9 +4,15 @@ data/
 # 有償データ（譲渡禁止）は念のため明示
 data/private/
 
-# 成果物。stations_all_restricted.parquet は TMT座標（譲渡禁止）を含むため
+# 成果物。stations_all_restricted* は TMT座標（譲渡禁止）を含むため
 # 絶対にコミットしないこと。検証レポートのみ reports/ にコミットする。
 output/
+
+# ビューワが読むデータ。警察地点の座標（TMT由来・譲渡禁止）を含むため、
+# ビルド成果物ごとコミット・公開しない。ビューワはローカル閲覧専用。
+viewer/public/data/
+viewer/dist/
+node_modules/
 
 *.log
 __pycache__/

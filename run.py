@@ -22,6 +22,7 @@ STEPS = [
     "stations",
     "unify",
     "export",
+    "export-viewer",
     "verify",
 ]
 
@@ -67,6 +68,9 @@ def main() -> None:
         elif step == "export":
             from export import export
             export(cfg, yyyymm)
+        elif step == "export-viewer":
+            from export_viewer import export_viewer
+            export_viewer(cfg, yyyymm)
         elif step == "verify":
             from verify import verify
             verify(cfg, regions, yyyymm)

@@ -1,0 +1,322 @@
+/* テーマは <html data-theme> で切り替える。既定はダーク。 */
+:root {
+  --bg: #ffffff;
+  --panel: rgba(255, 255, 255, 0.94);
+  --fg: #14161a;
+  --fg-dim: #5b616b;
+  --border: rgba(0, 0, 0, 0.14);
+  --accent: #2563eb;
+  --warn: #b45309;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+}
+
+:root[data-theme='dark'] {
+  --bg: #14161a;
+  --panel: rgba(24, 27, 32, 0.92);
+  --fg: #e8eaed;
+  --fg-dim: #9aa1ab;
+  --border: rgba(255, 255, 255, 0.16);
+  --accent: #60a5fa;
+  --warn: #fbbf24;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  overscroll-behavior: none;
+}
+
+#map { position: absolute; inset: 0; }
+
+/* ---- ヘッダー ---- */
+#header {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+#header h1 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+#subtitle {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-dim);
+}
+
+#theme-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 4px 6px;
+}
+
+/* ---- 左パネル ---- */
+#panel {
+  position: absolute;
+  top: 56px;
+  left: 8px;
+  z-index: 3;
+  width: 232px;
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  padding: 8px 10px 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+}
+
+#panel.collapsed .panel-body { display: none; }
+
+#collapse-btn {
+  position: sticky;
+  top: 0;
+  float: right;
+  border: none;
+  background: transparent;
+  color: var(--fg-dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+}
+
+.group { margin-top: 10px; }
+.group:first-child { margin-top: 2px; }
+
+.group-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-dim);
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+
+.chk {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 3px 0;
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.chk input { margin: 2px 0 0; flex: none; cursor: pointer; }
+.chk em { display: block; font-style: normal; color: var(--fg-dim); font-size: 11px; }
+
+.btn {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.meta { color: var(--fg-dim); font-size: 10.5px; line-height: 1.5; }
+.meta code { font-size: 10px; }
+#attribution { margin-top: 6px; }
+#build-ver { margin-top: 4px; opacity: 0.7; }
+
+/* ---- 凡例 ---- */
+.lg-title {
+  font-size: 10.5px;
+  color: var(--fg-dim);
+  margin: 6px 0 3px;
+}
+.lg-title:first-child { margin-top: 0; }
+
+.lg-bar {
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.lg-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--fg-dim);
+  margin-top: 2px;
+}
+
+.lg-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 2px 0;
+}
+
+.sw {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex: none;
+}
+.sw.ring { background: transparent; border: 2px solid; }
+
+/* ---- 下部タイムライン ---- */
+#timebar {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.tb-modes { display: flex; gap: 2px; flex: none; }
+
+.tb-modes button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  font-size: 11.5px;
+  padding: 4px 9px;
+  cursor: pointer;
+}
+.tb-modes button:first-child { border-radius: 6px 0 0 6px; }
+.tb-modes button:last-child { border-radius: 0 6px 6px 0; }
+.tb-modes button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.tb-day {
+  flex: none;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+
+.tb-play {
+  flex: none;
+  width: 28px;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tb-slider { flex: 1 1 auto; min-width: 80px; accent-color: var(--accent); cursor: pointer; }
+
+.tb-label {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  font-weight: 600;
+  min-width: 128px;
+  text-align: right;
+}
+
+.tb-loading { flex: none; font-size: 11px; color: var(--fg-dim); }
+
+/* ---- ポップアップ ---- */
+.station-popup .maplibregl-popup-content {
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 10px 12px;
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+}
+.station-popup .maplibregl-popup-tip { display: none; }
+.station-popup .maplibregl-popup-close-button {
+  color: var(--fg-dim);
+  font-size: 16px;
+  padding: 0 5px;
+}
+
+.pp-src { font-size: 10.5px; color: var(--fg-dim); letter-spacing: 0.03em; }
+.pp-name { font-weight: 700; margin-top: 1px; }
+.pp-val { font-size: 20px; font-weight: 700; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+.pp-val span { font-size: 11px; font-weight: 500; color: var(--fg-dim); margin-left: 3px; }
+.pp-warn { color: var(--warn); font-size: 11px; margin: 3px 0; }
+.pp-meta { font-size: 10px; color: var(--fg-dim); margin-top: 5px; }
+.pp-meta code { font-size: 10px; }
+
+.spark { display: block; width: 100%; height: 40px; color: var(--accent); margin-top: 4px; }
+.spark-note { font-size: 9.5px; color: var(--fg-dim); }
+
+/* ---- 背景地図スイッチャー ---- */
+.basemap-ctrl { display: flex; overflow: hidden; }
+.basemap-ctrl button {
+  border: none;
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 11px;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.basemap-ctrl button + button { border-left: 1px solid var(--border); }
+.basemap-ctrl button.active { background: var(--accent); color: #fff; }
+
+/* ---- 起動失敗 ---- */
+.fatal {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-content: center;
+  padding: 32px;
+  white-space: pre-wrap;
+  text-align: center;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ---- 狭い画面 ---- */
+@media (max-width: 640px) {
+  #panel { width: 190px; max-height: calc(100% - 150px); }
+  .tb-label { min-width: 96px; font-size: 11.5px; }
+  #timebar { flex-wrap: wrap; }
+  .tb-slider { order: 10; flex-basis: 100%; }
+}
