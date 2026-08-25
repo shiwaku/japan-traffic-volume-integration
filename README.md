@@ -41,11 +41,29 @@ python run.py --step stations,unify,export,verify --regions sapporo --month 2026
 | ingest-mlit | 取得CSV → counts / stations Parquet（方向×車種のlong format） |
 | stations | 統合観測点マスタ生成。`data/private/tmt/*.csv` があれば警察地点に座標結合 |
 | unify | counts統合＋断面1時間合計へ正規化（counts_unified_1h） |
-| export | 座標を持つ観測点の GeoJSON 出力（PMTilesはtippecanoe導入後） |
+| export | 観測点を**ライセンスの出所別に分割**して出力（PMTilesはtippecanoe導入後） |
 | verify | 検証レポートJSONを `reports/` に出力（コミット対象） |
 
-成果物は `data/output/{YYYYMM}/`（counts.parquet / counts_unified_1h.parquet /
-stations.parquet / stations.geojson）。
+### 成果物（`data/output/{YYYYMM}/`）
+
+```
+counts/source={police,mlit_tracan,mlit_cctv}/     # 交通量 long format
+counts_unified_1h/source={...}/                   # 断面1時間合計に正規化
+stations_open.{parquet,geojson}                   # 国交省座標のみ → 公開可
+stations_restricted.parquet                       # TMT座標を含む → 公開不可
+```
+
+**2つの軸で分割している**（詳細は [DESIGN.md §3.5(c)](DESIGN.md)）。
+
+- `source=` の Hive パーティション … 警察と国交省は**別系統の機器**であり、
+  同一列に並べたままだと誤って合算されうるため物理分割する
+  （同一断面に併設されていれば二重計上になる）。横断クエリは
+  `read_parquet('counts/**/*.parquet', hive_partitioning=true)` で可能
+- `stations_open` / `stations_restricted` … TMT座標（譲渡禁止）と
+  国交省API座標（CC BY互換）を混ぜると、本来公開できる国交省地点まで
+  TMTの制約に巻き込まれるため
+
+`counts` 系は座標列を持たないため、**警察分を含めてそのまま公開できる**。
 
 ## データソース
 
