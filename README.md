@@ -7,8 +7,12 @@
 設計の全容は [DESIGN.md](DESIGN.md) を参照。
 Phase 1（札幌方面・2026年6月分）のパイプラインが動作済み。検証結果は [reports/](reports/) を参照。
 
-3系統の計測機器（国交省の常設トラカン／CCTVトラカン、警察の車両感知器）の設置形態・計測原理・
-現地での見分け方は **[docs/sensor-types.md](docs/sensor-types.md)** にまとめている。
+3系統の計測機器（国交省の常設トラカン／CCTVトラカン、警察の車両感知器）については2つの資料がある。
+
+| 資料 | 内容 |
+|---|---|
+| **[docs/sensor-guide.html](docs/sensor-guide.html)** | **設置形態の模式図**と要点。ブラウザで開く。機器の色はビューワと同一（警察=黄／常設=水色／CCTV=緑） |
+| [docs/sensor-types.md](docs/sensor-types.md) | 詳細資料。一次資料の出典付き（約140リンク）、写真・図解の掲載ページURL集、実データで裏取りした事項 |
 
 ## Phase 1 の検証結果（2026年6月・札幌方面）
 
